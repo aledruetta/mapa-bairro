@@ -1,0 +1,29 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  padding-top: 50px;
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.market-list {
+  padding: 0;
+}
+
+.list-group-item:first-child {
+  border-radius: 0;
+  border-top: 0;
+}
+
+.list-group-item:last-child {
+  border-radius: 0;
+}
+
+.map {
+  height: calc(100vh - 50px);
+}
