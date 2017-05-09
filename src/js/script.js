@@ -41,25 +41,34 @@ function app() {
       model.bounds.extend(position);
     },
 
+    // Cria marcador, adiciona no array markers e extende as bordas do mapa
+    createMarker: function(properties) {
+      var marker = new google.maps.Marker(properties);
+      marker.setAnimation(google.maps.Animation.DROP);
+      model.markers.push(marker);
+      this.extendBounds(marker.position);
+
+      return marker;
+    },
+
+    getMarkers: function() {
+      return model.markers;
+    },
+
     init: function() {
       view.init();
     }
   };
 
   var view = {
-    createMarker: function(properties) {
-      var marker = new google.maps.Marker(properties);
-      marker.setMap(map);
-      marker.setAnimation(google.maps.Animation.DROP);
-      control.extendBounds(marker.position);
-    },
-
+    // Inicializa o mapa criando os marcadores iniciais (model.locations)
     initMap: function() {
       map = new google.maps.Map(document.getElementById('map'));
       var locations = control.getLocations();
       var bounds = control.getBounds();
       locations.forEach(function(location) {
-        view.createMarker(location);
+        var marker = control.createMarker(location);
+        marker.setMap(map);
       });
       map.fitBounds(bounds);
     },
