@@ -4,7 +4,8 @@ function app() {
   "use strict";
 
   var model = {
-    markers: [
+    bounds: new google.maps.LatLngBounds(),
+    locations: [
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
       {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
       {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
@@ -23,12 +24,21 @@ function app() {
       {title: 'Praia da Almada', position: {lat: -23.3606441, lng: -44.8904074}},
       {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
       {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}}
-    ]
+    ],
+    markers: []
   };
 
   var control = {
-    getMarkers: function() {
-      return model.markers;
+    getLocations: function() {
+      return model.locations;
+    },
+
+    getBounds: function() {
+      return model.bounds;
+    },
+
+    extendBounds: function(position) {
+      model.bounds.extend(position);
     },
 
     init: function() {
@@ -37,12 +47,20 @@ function app() {
   };
 
   var view = {
+    createMarker: function(properties) {
+      var marker = new google.maps.Marker(properties);
+      marker.setMap(map);
+      marker.setAnimation(google.maps.Animation.DROP);
+      control.extendBounds(marker.position);
+    },
+
     initMap: function() {
       map = new google.maps.Map(document.getElementById('map'));
-      var markers = control.getMarkers();
-      var maranduba = markers[0];
-      var picinguaba = markers[1];
-      var bounds = new google.maps.LatLngBounds(maranduba.position, picinguaba.position);
+      var locations = control.getLocations();
+      var bounds = control.getBounds();
+      locations.forEach(function(location) {
+        view.createMarker(location);
+      });
       map.fitBounds(bounds);
     },
 
