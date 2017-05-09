@@ -1,0 +1,8 @@
+{
+  "name": "mapa-bairro",
+  "version": "0.1.0",
+  "description": "Projeto Frontend Udacity Nanodegree",
+  "main": "index.html",
+  "author": "Alejandro Druetta <aledruetta@gmail.com>",
+  "license": "MIT"
+}
