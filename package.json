@@ -2,7 +2,15 @@
   "name": "mapa-bairro",
   "version": "0.1.0",
   "description": "Projeto Frontend Udacity Nanodegree",
-  "main": "index.html",
+  "main": "src/index.html",
   "author": "Alejandro Druetta <aledruetta@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "libs": "cp node_modules/bootstrap/dist/css/bootstrap.min.css src/libs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
+    "knockout": "^3.4.2"
+  }
 }
