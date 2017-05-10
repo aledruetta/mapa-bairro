@@ -61,7 +61,8 @@ function app() {
   };
 
   var view = {
-    // Inicializa o mapa criando os marcadores iniciais (model.locations)
+    // Inicializa o mapa posicionando os marcadores iniciais
+    // e definindo o tamanho do mapa para contê-los
     initMap: function() {
       map = new google.maps.Map(document.getElementById('map'));
       var locations = control.getLocations();
