@@ -70,8 +70,14 @@ function app() {
       locations.forEach(function(location) {
         var marker = control.createMarker(location);
         marker.setMap(map);
+        view.addButton(marker.title);
       });
       map.fitBounds(bounds);
+    },
+
+    addButton: function(title) {
+      var $button = $('<button type="button" name="button" class="list-group-item">%text%</button>'.replace(/%text%/, title));
+      $('.list-group').append($button);
     },
 
     init: function() {
