@@ -38,8 +38,8 @@
           </div>
 
           <div class="list-group marker-list" data-bind="foreach: markers">
-            <button type="button" name="button" class="list-group-item" \
-              data-bind="text: title"></button
+            <button type="button" name="button" class="list-group-item"
+              data-bind="text: title, click: $parent.clickResponse"></button>
           </div>
         </aside>
 

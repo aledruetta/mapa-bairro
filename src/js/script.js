@@ -5,6 +5,7 @@ function app() {
     var self = this;
     var map = new google.maps.Map(document.getElementById('map'));
     var bounds = new google.maps.LatLngBounds();
+    var infowindow = new google.maps.InfoWindow();
     var locations = [
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
       {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
@@ -28,6 +29,13 @@ function app() {
 
     self.markers = ko.observableArray([]);
 
+    self.clickResponse = function(marker) {
+      resetMarkers();
+      map.panTo(marker.position);
+      marker.setAnimation(google.maps.Animation.DROP);
+      marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
+    };
+
     function initMap() {
       locations.forEach(function(location) {
         createMarker(location);
@@ -39,8 +47,23 @@ function app() {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
       marker.setMap(map);
+      marker.addListener('click', function() {
+        showInfoWindow(marker);
+      });
       self.markers().push(marker);
       bounds.extend(marker.position);
+    }
+
+    function resetMarkers() {
+      self.markers().forEach(function(marker) {
+        marker.setIcon(null);
+        marker.setAnimation(null);
+      });
+    }
+
+    function showInfoWindow(marker) {
+      infowindow.setContent(marker.title);
+      infowindow.open(map, marker);
     }
 
     initMap();
