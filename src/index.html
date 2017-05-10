@@ -37,7 +37,10 @@
             <input type="text" class="form-control search-in" placeholder="">
           </div>
 
-          <div class="list-group marker-list"></div>
+          <div class="list-group marker-list" data-bind="foreach: markers">
+            <button type="button" name="button" class="list-group-item" \
+              data-bind="text: title"></button
+          </div>
         </aside>
 
         <div id="map" class="map"></div>
@@ -45,9 +48,9 @@
       </div>
     </div>
 
+    <script src="libs/knockout-latest.js"></script>
     <script src="libs/jquery.min.js"></script>
     <script src="libs/bs/js/bootstrap.min.js"></script>
-    <script src="libs/knockout-latest.js"></script>
     <script src="js/script.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyC0Qliqe7HjHeD2daBzwVtk6ndT3kJLVlc&callback=app"
     async defer></script>

@@ -1,11 +1,11 @@
-var map;
-
 function app() {
   "use strict";
 
-  var model = {
-    bounds: new google.maps.LatLngBounds(),
-    locations: [
+  function MapViewModel() {
+    var self = this;
+    var map = new google.maps.Map(document.getElementById('map'));
+    var bounds = new google.maps.LatLngBounds();
+    var locations = [
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
       {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
       {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
@@ -23,67 +23,28 @@ function app() {
       {title: 'Praia Ubatumirim', position: {lat: -23.3345485, lng: -44.9042858}},
       {title: 'Praia da Almada', position: {lat: -23.3606441, lng: -44.8904074}},
       {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
-      {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}}
-    ],
-    markers: []
-  };
+      {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
+    ];
 
-  var control = {
-    getLocations: function() {
-      return model.locations;
-    },
+    self.markers = ko.observableArray([]);
 
-    getBounds: function() {
-      return model.bounds;
-    },
-
-    extendBounds: function(position) {
-      model.bounds.extend(position);
-    },
-
-    // Cria marcador, adiciona no array markers e extende as bordas do mapa
-    createMarker: function(properties) {
-      var marker = new google.maps.Marker(properties);
-      marker.setAnimation(google.maps.Animation.DROP);
-      model.markers.push(marker);
-      this.extendBounds(marker.position);
-
-      return marker;
-    },
-
-    getMarkers: function() {
-      return model.markers;
-    },
-
-    init: function() {
-      view.init();
-    }
-  };
-
-  var view = {
-    // Inicializa o mapa posicionando os marcadores iniciais
-    // e definindo o tamanho do mapa para contê-los
-    initMap: function() {
-      map = new google.maps.Map(document.getElementById('map'));
-      var locations = control.getLocations();
-      var bounds = control.getBounds();
+    function initMap() {
       locations.forEach(function(location) {
-        var marker = control.createMarker(location);
-        marker.setMap(map);
-        view.addButton(marker.title);
+        createMarker(location);
       });
       map.fitBounds(bounds);
-    },
-
-    addButton: function(title) {
-      var $button = $('<button type="button" name="button" class="list-group-item">%text%</button>'.replace(/%text%/, title));
-      $('.list-group').append($button);
-    },
-
-    init: function() {
-      this.initMap();
     }
-  };
 
-  control.init();
+    function createMarker(properties) {
+      var marker = new google.maps.Marker(properties);
+      marker.setAnimation(google.maps.Animation.DROP);
+      marker.setMap(map);
+      self.markers().push(marker);
+      bounds.extend(marker.position);
+    }
+
+    initMap();
+  }
+
+  ko.applyBindings(new MapViewModel());
 }
