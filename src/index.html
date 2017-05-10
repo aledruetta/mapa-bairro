@@ -7,7 +7,7 @@
     <title>Mapa do Bairro</title>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/bs/css/bootstrap.min.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -29,10 +29,12 @@
 
         <aside class="col-sm-3 market-list">
           <div class="input-group">
-            <input type="text" class="form-control search-in" placeholder="">
             <span class="input-group-btn">
-              <button type="button" class="btn btn-success search-btn">Search</button>
+              <button type="button" class="btn btn-success search-btn">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+              </button>
             </span>
+            <input type="text" class="form-control search-in" placeholder="">
           </div>
 
           <div class="list-group">
@@ -49,7 +51,7 @@
     </div>
 
     <script src="libs/jquery.min.js"></script>
-    <script src="libs/bootstrap.min.js"></script>
+    <script src="libs/bs/js/bootstrap.min.js"></script>
     <script src="libs/knockout-latest.js"></script>
     <script src="js/script.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyC0Qliqe7HjHeD2daBzwVtk6ndT3kJLVlc&callback=app"
