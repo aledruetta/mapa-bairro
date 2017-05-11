@@ -4,9 +4,11 @@ function app() {
   function MapViewModel() {
     var self = this;
     // objetos da API
+
     var map = new google.maps.Map(document.getElementById('map'));
     var bounds = new google.maps.LatLngBounds();
     var infowindow = new google.maps.InfoWindow();
+
     // Dados para marcadores inciais
     var locations = [
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
@@ -65,6 +67,19 @@ function app() {
     // Inicializa o mapa, posiciona os marcadores iniciais e determina
     // as dimensões do mapa para conter todos eles
     function initMap() {
+      $.getJSON('/src/json/ubatuba_poly.txt', function(geoJsonTxt) {
+        var geojson = {
+          "type": "FeatureCollection",
+          "features": [{
+            "type": "Feature",
+            "geometry": {},
+            "properties": {}
+          }],
+        };
+        geojson.features[0].geometry = geoJsonTxt;
+        map.data.addGeoJson(geojson);
+      });
+
       locations.forEach(function(location) {
         createMarker(location);
       });
