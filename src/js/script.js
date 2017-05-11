@@ -3,9 +3,11 @@ function app() {
 
   function MapViewModel() {
     var self = this;
+    // objetos da API
     var map = new google.maps.Map(document.getElementById('map'));
     var bounds = new google.maps.LatLngBounds();
     var infowindow = new google.maps.InfoWindow();
+    // Dados para marcadores inciais
     var locations = [
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
       {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
@@ -27,11 +29,13 @@ function app() {
       {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
     ];
 
+    // Observables
     self.markers = ko.observableArray([]);
     self.filtered = ko.observableArray([]);
     self.searchIn = ko.observable('');
 
-    self.clickResponse = function(marker) {
+    // Eventos para quando clicar no botão
+    self.clickLista = function(marker) {
       resetMarkers();
       map.panTo(marker.position);
       map.setZoom(16);
@@ -42,6 +46,24 @@ function app() {
       marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
     };
 
+    // Filtra marcadores dinamicamente segundo o digitado no campo de busca
+    self.filterMarkers = function(data, event) {
+      // ESC limpa o campo de busca
+      if (event.keyCode !== 27) {
+        var search = self.searchIn().toLowerCase();
+        var filtered = self.markers().filter(function(marker) {
+          var title = marker.title.toLowerCase();
+          return title.indexOf(search) !== -1;
+        });
+        self.filtered(filtered);
+      } else {
+        self.searchIn('');
+        self.filtered(self.markers());
+      }
+    };
+
+    // Inicializa o mapa, posiciona os marcadores iniciais e determina
+    // as dimensões do mapa para conter todos eles
     function initMap() {
       locations.forEach(function(location) {
         createMarker(location);
@@ -50,6 +72,8 @@ function app() {
       map.fitBounds(bounds);
     }
 
+    // Cria marcador, adiciona evento click para infowindow,
+    // extende bounds e adiciona no array markers
     function createMarker(properties) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
@@ -61,15 +85,7 @@ function app() {
       bounds.extend(marker.position);
     }
 
-    self.filterMarkers = function() {
-      var search = self.searchIn().toLowerCase();
-      var filtered = self.markers().filter(function(marker) {
-        var title = marker.title.toLowerCase();
-        return title.indexOf(search) !== -1;
-      });
-      self.filtered(filtered);
-    };
-
+    // Icone e animação iniciais para todos os marcadores
     function resetMarkers() {
       self.markers().forEach(function(marker) {
         marker.setIcon(null);
@@ -77,6 +93,7 @@ function app() {
       });
     }
 
+    // Mostra popup infowindow
     function showInfoWindow(marker) {
       infowindow.setContent(marker.title);
       infowindow.open(map, marker);

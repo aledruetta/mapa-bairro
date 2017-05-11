@@ -23,7 +23,7 @@ body {
 }
 
 .marker-list {
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 0;
 }
 
