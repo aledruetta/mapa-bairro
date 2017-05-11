@@ -32,7 +32,7 @@ function app() {
     self.clickResponse = function(marker) {
       resetMarkers();
       map.panTo(marker.position);
-      marker.setAnimation(google.maps.Animation.DROP);
+      marker.setAnimation(google.maps.Animation.BOUNCE);
       marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
     };
 
