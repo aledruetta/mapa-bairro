@@ -73,12 +73,29 @@ function app() {
           "features": [{
             "type": "Feature",
             "geometry": {},
-            "properties": {}
+            "properties": {
+              fillColor: "purple",
+              fillOpacity: 0.05,
+              strokeColor: "purple",
+              strokeOpacity: 0.2,
+              strokeWeight: 1
+            }
           }],
         };
         geojson.features[0].geometry = geoJsonTxt;
         map.data.addGeoJson(geojson);
+        setStyleMap();
       });
+
+      function setStyleMap() {
+        map.data.setStyle(function(feature) {
+          var style = {};
+          feature.forEachProperty(function(value, property) {
+            style[property] = value;
+          });
+          return style;
+        });
+      }
 
       locations.forEach(function(location) {
         createMarker(location);
