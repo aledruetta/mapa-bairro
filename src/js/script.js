@@ -12,7 +12,7 @@ function app() {
       {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
       {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
       {title: 'Praia Vermelha do Sul', position: {lat: -23.5097394, lng: -45.1755504}},
-      {title: 'Praia de Santa Rita', position: {lat: -23.4946283, lng: -45.1054253}},
+      {title: 'Praia de Santa Rita', position: {lat: -23.493743, lng: -45.102622}},
       {title: 'Praia Grande', position: {lat: -23.4716174, lng: -45.0690359}},
       {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
       {title: 'Praia Vermelha do Centro', position: {lat: -23.4625236, lng: -45.0502857}},
@@ -28,11 +28,17 @@ function app() {
     ];
 
     self.markers = ko.observableArray([]);
+    self.filtered = ko.observableArray([]);
+    self.searchIn = ko.observable('');
 
     self.clickResponse = function(marker) {
       resetMarkers();
       map.panTo(marker.position);
+      map.setZoom(16);
       marker.setAnimation(google.maps.Animation.BOUNCE);
+      window.setTimeout(function() {
+        marker.setAnimation(null);
+      }, 3000);
       marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
     };
 
@@ -40,6 +46,7 @@ function app() {
       locations.forEach(function(location) {
         createMarker(location);
       });
+      self.filtered(self.markers());
       map.fitBounds(bounds);
     }
 
@@ -53,6 +60,15 @@ function app() {
       self.markers().push(marker);
       bounds.extend(marker.position);
     }
+
+    self.filterMarkers = function() {
+      var search = self.searchIn().toLowerCase();
+      var filtered = self.markers().filter(function(marker) {
+        var title = marker.title.toLowerCase();
+        return title.indexOf(search) !== -1;
+      });
+      self.filtered(filtered);
+    };
 
     function resetMarkers() {
       self.markers().forEach(function(marker) {

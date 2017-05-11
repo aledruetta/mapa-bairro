@@ -34,10 +34,11 @@
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
               </button>
             </span>
-            <input type="text" class="form-control search-in" placeholder="">
+            <input type="text" class="form-control search-in" placeholder=""
+              data-bind="textInput: searchIn, event: {keyup: filterMarkers}">
           </div>
 
-          <div class="list-group marker-list" data-bind="foreach: markers">
+          <div class="list-group marker-list" data-bind="foreach: filtered">
             <button type="button" name="button" class="list-group-item"
               data-bind="text: title, click: $parent.clickResponse"></button>
           </div>
