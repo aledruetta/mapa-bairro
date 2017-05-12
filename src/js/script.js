@@ -40,7 +40,7 @@ function app() {
     self.clickLista = function(marker) {
       resetMarkers();
       map.panTo(marker.position);
-      map.setZoom(16);
+      map.setZoom(14);
       marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
@@ -51,23 +51,34 @@ function app() {
     // Filtra marcadores dinamicamente segundo o digitado no campo de busca
     self.filterMarkers = function(data, event) {
       // ESC limpa o campo de busca
-      if (event.keyCode !== 27) {
+      if (event.keyCode === 27) {
+        self.searchIn('');
+        self.filtered(self.markers());
+      } else {
         var search = self.searchIn().toLowerCase();
         var filtered = self.markers().filter(function(marker) {
           var title = marker.title.toLowerCase();
           return title.indexOf(search) !== -1;
         });
         self.filtered(filtered);
-      } else {
-        self.searchIn('');
-        self.filtered(self.markers());
       }
     };
 
     // Inicializa o mapa, posiciona os marcadores iniciais e determina
     // as dimensões do mapa para conter todos eles
     function initMap() {
+      // Cria e posiciona os marcadores iniciais
+      locations.forEach(function(location) {
+        createMarker(location);
+      });
+      // Inicializa a lista
+      self.filtered(self.markers());
+      // Determina os limites do mapa
+      map.fitBounds(bounds);
+
+      // Carrega dados de polígono exportados do Open Street Map
       $.getJSON('/src/json/ubatuba_poly.txt', function(geoJsonTxt) {
+        // Cria objeto FeatureCollection com formatação de estilo
         var geojson = {
           "type": "FeatureCollection",
           "features": [{
@@ -82,8 +93,11 @@ function app() {
             }
           }],
         };
+        // Adiciona os dados importados pro FeatureCollection
         geojson.features[0].geometry = geoJsonTxt;
+        // Desenha o polígono no mapa
         map.data.addGeoJson(geojson);
+        // Aplica estilo
         setStyleMap();
       });
 
@@ -96,16 +110,10 @@ function app() {
           return style;
         });
       }
-
-      locations.forEach(function(location) {
-        createMarker(location);
-      });
-      self.filtered(self.markers());
-      map.fitBounds(bounds);
     }
 
     // Cria marcador, adiciona evento click para infowindow,
-    // extende bounds e adiciona no array markers
+    // extende bounds e adiciona o item no array de marcadores
     function createMarker(properties) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
