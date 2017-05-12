@@ -41,14 +41,18 @@ function app() {
 
     // Eventos para quando clicar no botão
     self.clickLista = function(marker) {
-      updateMap(marker);
+      self.toggleInfoPanel();
       resetSeach();
+      populateInfoPanel(marker);
+      updateMap(marker);
+    };
+
+    function populateInfoPanel(marker) {
       self.infoPanel({
         title: marker.title,
         endereco: 'rua sei lá o quê',
       });
-      self.toggleInfoPanel();
-    };
+    }
 
     self.toggleInfoPanel = function() {
       self.showInfoPanel(self.showMarkerList());
