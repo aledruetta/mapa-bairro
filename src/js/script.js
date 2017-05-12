@@ -35,30 +35,24 @@ function app() {
     self.markers = ko.observableArray([]);
     self.filtered = ko.observableArray([]);
     self.searchIn = ko.observable('');
-    self.infoHeading = ko.observable('');
     self.showInfoPanel = ko.observable(false);
     self.showMarkerList = ko.observable(true);
+    self.infoPanel = ko.observable(null);
 
     // Eventos para quando clicar no botão
     self.clickLista = function(marker) {
       updateMap(marker);
       resetSeach();
-      showContextInfo(marker);
+      self.infoPanel({
+        title: marker.title,
+        endereco: 'rua sei lá o quê',
+      });
+      self.toggleInfoPanel();
     };
 
-    function showContextInfo(marker) {
-      self.infoHeading(marker.title);
-      self.toggleInfoPanel();
-    }
-
     self.toggleInfoPanel = function() {
-      if (self.showInfoPanel()) {
-        self.showInfoPanel(false);
-        self.showMarkerList(true);
-      } else {
-        self.showInfoPanel(true);
-        self.showMarkerList(false);
-      }
+      self.showInfoPanel(self.showMarkerList());
+      self.showMarkerList(!self.showInfoPanel());
     };
 
     function updateMap(marker) {
