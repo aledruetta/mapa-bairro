@@ -3,8 +3,8 @@ function app() {
 
   function MapViewModel() {
     var self = this;
-    // objetos da API
 
+    // objetos da API
     var map = new google.maps.Map(document.getElementById('map'));
     var bounds = new google.maps.LatLngBounds();
     var infowindow = new google.maps.InfoWindow();
@@ -32,6 +32,9 @@ function app() {
       {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
     ];
 
+    // Marcadores temporais
+    var tmpMarkers = [];
+
     // Observables
     self.markers = ko.observableArray([]);
     self.filtered = ko.observableArray([]);
@@ -43,7 +46,7 @@ function app() {
 
     // Eventos para quando clicar no botão
     self.clickLista = function(marker) {
-      self.toggleInfoPanel();
+      toggleInfoPanel();
       resetSeach();
       updateMap(marker);
       self.infoPanel({
@@ -77,11 +80,17 @@ function app() {
       });
     }
 
+    self.closeInfoPanel = function() {
+      toggleInfoPanel();
+      resetMarkers();
+      map.fitBounds(bounds);
+    };
+
     // Alternar visulização entre lista de marcadores e informação contextual
-    self.toggleInfoPanel = function() {
+    function toggleInfoPanel() {
       self.showInfoPanel(self.showMarkerList());
       self.showMarkerList(!self.showInfoPanel());
-    };
+    }
 
     function updateMap(marker) {
       resetMarkers();
@@ -109,9 +118,23 @@ function app() {
       }
     };
 
+    // Limpa o campo de busca e reinicia a lista
     function resetSeach() {
       self.searchIn('');
       self.filtered(self.markers());
+    }
+
+    // Elimina os marcadores temporais
+    // e reinicia configurações dos marcadores iniciais
+    function resetMarkers() {
+      tmpMarkers.forEach(function(marker) {
+        marker.setMap(null);
+      });
+      self.markers().forEach(function(marker) {
+        marker.setMap(map);
+        marker.setIcon(null);
+        marker.setAnimation(null);
+      });
     }
 
     function getPolygon() {
@@ -153,25 +176,19 @@ function app() {
 
     // Cria marcador, adiciona evento click para infowindow,
     // extende bounds e adiciona o item no array de marcadores
-    function createMarker(properties, addToArray) {
+    function createMarker(properties, addToMarkers) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
       marker.setMap(map);
       marker.addListener('click', function() {
         showInfoWindow(marker);
       });
-      if (addToArray) {
+      if (addToMarkers) {
         self.markers().push(marker);
+      } else {
+        tmpMarkers.push(marker);
       }
       bounds.extend(marker.position);
-    }
-
-    // Icone e animação iniciais para todos os marcadores
-    function resetMarkers() {
-      self.markers().forEach(function(marker) {
-        marker.setIcon(null);
-        marker.setAnimation(null);
-      });
     }
 
     // Mostra popup infowindow
