@@ -114,18 +114,7 @@ function app() {
       self.filtered(self.markers());
     }
 
-    // Inicializa o mapa, posiciona os marcadores iniciais e determina
-    // as dimensões do mapa para conter todos eles
-    function initMap() {
-      // Cria e posiciona os marcadores iniciais
-      locations.forEach(function(location) {
-        createMarker(location, true);
-      });
-      // Inicializa a lista
-      self.filtered(self.markers());
-      // Determina os limites do mapa
-      map.fitBounds(bounds);
-
+    function getPolygon() {
       // Carrega dados de polígono exportados do Open Street Map
       $.getJSON('/src/json/ubatuba_poly.txt', function(geoJsonTxt) {
         // Cria objeto FeatureCollection com formatação de estilo
@@ -150,16 +139,16 @@ function app() {
         // Aplica estilo
         setStyleMap();
       });
+    }
 
-      function setStyleMap() {
-        map.data.setStyle(function(feature) {
-          var style = {};
-          feature.forEachProperty(function(value, property) {
-            style[property] = value;
-          });
-          return style;
+    function setStyleMap() {
+      map.data.setStyle(function(feature) {
+        var style = {};
+        feature.forEachProperty(function(value, property) {
+          style[property] = value;
         });
-      }
+        return style;
+      });
     }
 
     // Cria marcador, adiciona evento click para infowindow,
@@ -189,6 +178,21 @@ function app() {
     function showInfoWindow(marker) {
       infowindow.setContent(marker.title);
       infowindow.open(map, marker);
+    }
+
+    // Inicializa o mapa, posiciona os marcadores iniciais e determina
+    // as dimensões do mapa para conter todos eles
+    function initMap() {
+      // Cria e posiciona os marcadores iniciais
+      locations.forEach(function(location) {
+        createMarker(location, true);
+      });
+      // Inicializa a lista
+      self.filtered(self.markers());
+      // Determina os limites do mapa
+      map.fitBounds(bounds);
+      // Desenha os limites do município
+      getPolygon();
     }
 
     initMap();
