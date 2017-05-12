@@ -36,7 +36,7 @@ function app() {
     var tmpMarkers = [];
 
     // Observables
-    self.markers = ko.observableArray([]);
+    self.markers = [];
     self.filtered = ko.observableArray([]);
     self.places = ko.observableArray([]);
     self.searchIn = ko.observable('');
@@ -110,7 +110,7 @@ function app() {
         resetSeach();
       } else {
         var search = self.searchIn().toLowerCase();
-        var filtered = self.markers().filter(function(marker) {
+        var filtered = self.markers.filter(function(marker) {
           var title = marker.title.toLowerCase();
           return title.indexOf(search) !== -1;
         });
@@ -121,16 +121,17 @@ function app() {
     // Limpa o campo de busca e reinicia a lista
     function resetSeach() {
       self.searchIn('');
-      self.filtered(self.markers());
+      self.filtered(self.markers);
     }
 
     // Elimina os marcadores temporais
     // e reinicia configurações dos marcadores iniciais
     function resetMarkers() {
+      infowindow.close();
       tmpMarkers.forEach(function(marker) {
         marker.setMap(null);
       });
-      self.markers().forEach(function(marker) {
+      self.markers.forEach(function(marker) {
         marker.setMap(map);
         marker.setIcon(null);
         marker.setAnimation(null);
@@ -184,7 +185,7 @@ function app() {
         showInfoWindow(marker);
       });
       if (addToMarkers) {
-        self.markers().push(marker);
+        self.markers.push(marker);
       } else {
         tmpMarkers.push(marker);
       }
@@ -205,7 +206,7 @@ function app() {
         createMarker(location, true);
       });
       // Inicializa a lista
-      self.filtered(self.markers());
+      self.filtered(self.markers);
       // Determina os limites do mapa
       map.fitBounds(bounds);
       // Desenha os limites do município
