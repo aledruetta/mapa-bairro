@@ -22,8 +22,19 @@ body {
   height: calc(100vh - 50px);
 }
 
-.marker-list {
+.search-in,
+.search-btn {
+  border-radius: 0;
+}
+
+.overflow {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   overflow-y: auto;
+}
+
+.marker-list {
   margin-bottom: 0;
 }
 
@@ -36,7 +47,9 @@ body {
   border-radius: 0;
 }
 
-.search-in,
-.search-btn {
+.info {
+  height: 100%;
   border-radius: 0;
+  border-top: 0;
+  margin-bottom: 0;
 }

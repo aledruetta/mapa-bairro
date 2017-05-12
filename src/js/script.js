@@ -35,9 +35,33 @@ function app() {
     self.markers = ko.observableArray([]);
     self.filtered = ko.observableArray([]);
     self.searchIn = ko.observable('');
+    self.infoHeading = ko.observable('');
+    self.showInfoPanel = ko.observable(false);
+    self.showMarkerList = ko.observable(true);
 
     // Eventos para quando clicar no botão
     self.clickLista = function(marker) {
+      updateMap(marker);
+      resetSeach();
+      showContextInfo(marker);
+    };
+
+    function showContextInfo(marker) {
+      self.infoHeading(marker.title);
+      self.toggleInfoPanel();
+    }
+
+    self.toggleInfoPanel = function() {
+      if (self.showInfoPanel()) {
+        self.showInfoPanel(false);
+        self.showMarkerList(true);
+      } else {
+        self.showInfoPanel(true);
+        self.showMarkerList(false);
+      }
+    };
+
+    function updateMap(marker) {
       resetMarkers();
       map.panTo(marker.position);
       map.setZoom(14);
@@ -46,14 +70,13 @@ function app() {
         marker.setAnimation(null);
       }, 3000);
       marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
-    };
+    }
 
     // Filtra marcadores dinamicamente segundo o digitado no campo de busca
     self.filterMarkers = function(data, event) {
       // ESC limpa o campo de busca
       if (event.keyCode === 27) {
-        self.searchIn('');
-        self.filtered(self.markers());
+        resetSeach();
       } else {
         var search = self.searchIn().toLowerCase();
         var filtered = self.markers().filter(function(marker) {
@@ -63,6 +86,11 @@ function app() {
         self.filtered(filtered);
       }
     };
+
+    function resetSeach() {
+      self.searchIn('');
+      self.filtered(self.markers());
+    }
 
     // Inicializa o mapa, posiciona os marcadores iniciais e determina
     // as dimensões do mapa para conter todos eles

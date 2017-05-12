@@ -38,9 +38,23 @@
               data-bind="textInput: searchIn, event: {keyup: filterMarkers}">
           </div>
 
-          <div class="list-group marker-list" data-bind="foreach: filtered">
-            <button type="button" name="button" class="list-group-item"
+          <div class="overflow">
+            <div class="list-group marker-list" data-bind="foreach: filtered, visible: showMarkerList">
+              <button type="button" name="button" class="list-group-item"
               data-bind="text: title, click: $parent.clickLista"></button>
+            </div>
+
+            <div id="info" class="panel panel-default info" data-bind="visible: showInfoPanel">
+              <div class="panel-heading">
+                <span data-bind="text: infoHeading"></span>
+                <button type="button" class="close" data-bind="click: toggleInfoPanel">
+                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div class="panel-body">
+                content
+              </div>
+            </div>
           </div>
         </aside>
 
