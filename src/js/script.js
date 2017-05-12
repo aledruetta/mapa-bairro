@@ -8,6 +8,7 @@ function app() {
     var map = new google.maps.Map(document.getElementById('map'));
     var bounds = new google.maps.LatLngBounds();
     var infowindow = new google.maps.InfoWindow();
+    var service = new google.maps.places.PlacesService(map);
 
     // Dados para marcadores inciais
     var locations = [
@@ -34,6 +35,7 @@ function app() {
     // Observables
     self.markers = ko.observableArray([]);
     self.filtered = ko.observableArray([]);
+    self.places = ko.observableArray([]);
     self.searchIn = ko.observable('');
     self.showInfoPanel = ko.observable(false);
     self.showMarkerList = ko.observable(true);
@@ -43,17 +45,39 @@ function app() {
     self.clickLista = function(marker) {
       self.toggleInfoPanel();
       resetSeach();
-      populateInfoPanel(marker);
       updateMap(marker);
-    };
-
-    function populateInfoPanel(marker) {
       self.infoPanel({
         title: marker.title,
-        endereco: 'rua sei lá o quê',
+        endereco: 'bla, bla, bla',
+      });
+      getNearBy(marker.getPosition());
+    };
+
+    function getNearBy(location) {
+      var request = {
+        location: location,
+        radius: '1000',
+      };
+      service.nearbySearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          var points = ['bar', 'restaurant', 'food', 'lodging'];
+          var places = results.filter(function(place) {
+            return points.some(function(point) {
+              return place.types.indexOf(point) !== -1;
+            });
+          });
+          places.forEach(function(place) {
+            createMarker({
+              title: place.name,
+              position: place.geometry.location,
+            }, false);
+            self.places.push(place.name);
+          });
+        }
       });
     }
 
+    // Alternar visulização entre lista de marcadores e informação contextual
     self.toggleInfoPanel = function() {
       self.showInfoPanel(self.showMarkerList());
       self.showMarkerList(!self.showInfoPanel());
@@ -62,7 +86,7 @@ function app() {
     function updateMap(marker) {
       resetMarkers();
       map.panTo(marker.position);
-      map.setZoom(14);
+      map.setZoom(15);
       marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
@@ -95,7 +119,7 @@ function app() {
     function initMap() {
       // Cria e posiciona os marcadores iniciais
       locations.forEach(function(location) {
-        createMarker(location);
+        createMarker(location, true);
       });
       // Inicializa a lista
       self.filtered(self.markers());
@@ -140,14 +164,16 @@ function app() {
 
     // Cria marcador, adiciona evento click para infowindow,
     // extende bounds e adiciona o item no array de marcadores
-    function createMarker(properties) {
+    function createMarker(properties, addToArray) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
       marker.setMap(map);
       marker.addListener('click', function() {
         showInfoWindow(marker);
       });
-      self.markers().push(marker);
+      if (addToArray) {
+        self.markers().push(marker);
+      }
       bounds.extend(marker.position);
     }
 

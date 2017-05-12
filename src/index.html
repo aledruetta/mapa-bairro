@@ -56,7 +56,11 @@
                 <li class="list-group-item">foto</li>
                 <li class="list-group-item" data-bind="text: endereco"></li>
                 <li class="list-group-item">recomendações</li>
-                <li class="list-group-item">places</li>
+                <li class="list-group-item">
+                  <ul class="list-places" data-bind="foreach: $parent.places">
+                    <li data-bind="text: $data"></li>
+                  </ul>
+                </li>
               </ul>
             </div>
           </div>
