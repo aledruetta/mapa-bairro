@@ -12,33 +12,30 @@ function app() {
 
     // Dados para marcadores inciais
     var locations = [
-      {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
-      {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
-      {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
-      {title: 'Praia Vermelha do Sul', position: {lat: -23.5097394, lng: -45.1755504}},
-      {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
-      {title: 'Praia de Santa Rita', position: {lat: -23.493743, lng: -45.102622}},
-      {title: 'Praia Grande', position: {lat: -23.4716174, lng: -45.0690359}},
-      {title: 'Praia Vermelha do Centro', position: {lat: -23.4625236, lng: -45.0502857}},
-      {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
-      {title: 'Praia Vermelha do Norte', position: {lat: -23.4191079, lng: -45.0390097}},
-      {title: 'Praia Itamambuca', position: {lat: -23.4030911, lng: -45.0047297}},
-      {title: 'Praia do Félix', position: {lat: -23.3905835, lng: -44.9740524}},
-      {title: 'Praia do Prumirim', position: {lat: -23.3848589, lng: -44.967505}},
-      {title: 'Praia da Puruba', position: {lat: -23.3586419, lng: -44.9444224}},
-      {title: 'Praia Ubatumirim', position: {lat: -23.3345485, lng: -44.9042858}},
-      {title: 'Praia da Almada', position: {lat: -23.3606441, lng: -44.8904074}},
-      {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
       {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
+      {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
+      {title: 'Praia da Almada', position: {lat: -23.3606441, lng: -44.8904074}},
+      {title: 'Praia Ubatumirim', position: {lat: -23.3345485, lng: -44.9042858}},
+      {title: 'Praia da Puruba', position: {lat: -23.3586419, lng: -44.9444224}},
+      {title: 'Praia do Prumirim', position: {lat: -23.3848589, lng: -44.967505}},
+      {title: 'Praia do Félix', position: {lat: -23.3905835, lng: -44.9740524}},
+      {title: 'Praia Itamambuca', position: {lat: -23.4030911, lng: -45.0047297}},
+      {title: 'Praia Vermelha do Norte', position: {lat: -23.4191079, lng: -45.0390097}},
+      {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
+      {title: 'Praia Vermelha do Centro', position: {lat: -23.4625236, lng: -45.0502857}},
+      {title: 'Praia Grande', position: {lat: -23.4716174, lng: -45.0690359}},
+      {title: 'Praia de Santa Rita', position: {lat: -23.493743, lng: -45.102622}},
+      {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
+      {title: 'Praia Vermelha do Sul', position: {lat: -23.5097394, lng: -45.1755504}},
+      {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
+      {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
+      {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
     ];
 
-    var tmpMarkers = [];
     var markers = [];
-    var isIconToggled = false;
-    var iconList = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
-    var iconPlaces = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-    var iconTarget = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
-    var iconToggled = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+    var iconRed = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    var iconBlue = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+    var iconYellow = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
 
     // Observables
     self.filtered = ko.observableArray([]);
@@ -50,6 +47,9 @@ function app() {
 
     // Eventos para quando clicar no botão
     self.clickLista = function(target) {
+      target.setIcon(iconBlue);
+      target.setZIndex(google.maps.Marker.MAX_ZINDEX);
+      target.setAnimation(google.maps.Animation.BOUNCE);
       toggleInfoPanel();
       resetSeach();
       getNearBy(target.getPosition());
@@ -60,20 +60,19 @@ function app() {
       });
     };
 
-    self.toggleIconColor = function(marker) {
-      isIconToggled = !isIconToggled;
-      if (isIconToggled) {
-        marker.setIcon(iconToggled);
-      } else {
-        marker.setIcon(iconList);
-      }
-    };
-
     // Alternar visulização entre lista de marcadores e informação contextual
     function toggleInfoPanel() {
       self.showInfoPanel(self.showMarkerList());
       self.showMarkerList(!self.showInfoPanel());
     }
+
+    self.mouseOverIcon = function(marker) {
+      marker.setIcon(iconBlue);
+    };
+
+    self.mouseOutIcon = function(marker) {
+      marker.setIcon(iconRed);
+    };
 
     function getNearBy(location) {
       var request = {
@@ -90,16 +89,25 @@ function app() {
           });
           places.forEach(function(place) {
             var name = capitalize(place.name);
-            if (place.geometry.location !== location) {
-              createMarker({
+            var position = place.geometry.location;
+            if (position && position !== location) {
+              var marker = createMarker({
                 title: name,
                 position: place.geometry.location,
-                icon: iconPlaces,
-              }, false);
-              self.places.push(name);
+                animation: google.maps.Animation.DROP,
+                icon: iconYellow,
+              });
+              self.places.push(marker);
             }
           });
-          self.places.sort();
+          self.places.sort(function(a, b) {
+            if (a.name < b.name) {
+              return -1;
+            } else if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          });
         }
       });
     }
@@ -111,7 +119,7 @@ function app() {
 
     self.closeInfoPanel = function() {
       toggleInfoPanel();
-      resetMarkers();
+      infowindow.close();
       resetPlaces();
       map.fitBounds(bounds);
     };
@@ -119,8 +127,6 @@ function app() {
     function updateMap(marker) {
       map.panTo(marker.position);
       map.setZoom(15);
-      marker.setZIndex(google.maps.Marker.MAX_ZINDEX);
-      marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
       }, 3000);
@@ -147,21 +153,10 @@ function app() {
       self.filtered(markers);
     }
 
-    // Elimina os marcadores temporais, fecha infowindow
-    // e reinicia configurações dos marcadores iniciais
-    function resetMarkers() {
-      infowindow.close();
-      tmpMarkers.forEach(function(marker) {
-        marker.setMap(null);
-      });
-      markers.forEach(function(marker) {
-        marker.setMap(map);
-        marker.setIcon(iconList);
-        marker.setAnimation(null);
-      });
-    }
-
     function resetPlaces() {
+      self.places().forEach(function(place) {
+        place.setMap(null);
+      });
       self.places([]);
     }
 
@@ -204,19 +199,15 @@ function app() {
 
     // Cria marcador, adiciona evento click para infowindow,
     // extende bounds e adiciona o item no array de marcadores
-    function createMarker(properties, addToMarkers) {
+    function createMarker(properties) {
       var marker = new google.maps.Marker(properties);
-      marker.setAnimation(google.maps.Animation.DROP);
       marker.setMap(map);
       marker.addListener('click', function() {
         showInfoWindow(marker);
       });
-      if (addToMarkers) {
-        markers.push(marker);
-      } else {
-        tmpMarkers.push(marker);
-      }
       bounds.extend(marker.position);
+
+      return marker;
     }
 
     // Mostra popup infowindow
@@ -230,8 +221,9 @@ function app() {
     function initMap() {
       // Cria e posiciona os marcadores iniciais
       locations.forEach(function(location) {
-        location.icon = iconList;
-        createMarker(location, true);
+        var marker = createMarker(location);
+        marker.setIcon(iconRed);
+        markers.push(marker);
       });
       // Inicializa a lista
       self.filtered(markers);
