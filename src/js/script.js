@@ -35,7 +35,9 @@ function app() {
     var tmpMarkers = [];
     var markers = [];
     var isIconToggled = false;
-    var iconInit = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    var iconList = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    var iconPlaces = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+    var iconTarget = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
     var iconToggled = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 
     // Observables
@@ -47,13 +49,13 @@ function app() {
     self.infoPanel = ko.observable(null);
 
     // Eventos para quando clicar no botão
-    self.clickLista = function(marker) {
+    self.clickLista = function(target) {
       toggleInfoPanel();
       resetSeach();
-      getNearBy(marker.getPosition());
-      updateMap(marker);
+      getNearBy(target.getPosition());
+      updateMap(target);
       self.infoPanel({
-        title: marker.title,
+        title: target.title,
         endereco: 'bla, bla, bla',
       });
     };
@@ -63,9 +65,15 @@ function app() {
       if (isIconToggled) {
         marker.setIcon(iconToggled);
       } else {
-        marker.setIcon(iconInit);
+        marker.setIcon(iconList);
       }
     };
+
+    // Alternar visulização entre lista de marcadores e informação contextual
+    function toggleInfoPanel() {
+      self.showInfoPanel(self.showMarkerList());
+      self.showMarkerList(!self.showInfoPanel());
+    }
 
     function getNearBy(location) {
       var request = {
@@ -81,11 +89,14 @@ function app() {
             });
           });
           places.forEach(function(place) {
-            createMarker({
-              title: place.name,
-              position: place.geometry.location,
-            }, false);
-            self.places.push(place.name);
+            if (place.geometry.location !== location) {
+              createMarker({
+                title: place.name,
+                position: place.geometry.location,
+                icon: iconPlaces,
+              }, false);
+              self.places.push(place.name);
+            }
           });
         }
       });
@@ -98,21 +109,12 @@ function app() {
       map.fitBounds(bounds);
     };
 
-    function resetPlaces() {
-      self.places([]);
-    }
-
-    // Alternar visulização entre lista de marcadores e informação contextual
-    function toggleInfoPanel() {
-      self.showInfoPanel(self.showMarkerList());
-      self.showMarkerList(!self.showInfoPanel());
-    }
-
     function updateMap(marker) {
       resetMarkers();
       map.panTo(marker.position);
       map.setZoom(15);
-      marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
+      marker.setZIndex(google.maps.Marker.MAX_ZINDEX);
+      marker.setIcon(iconTarget);
       marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
@@ -149,9 +151,13 @@ function app() {
       });
       markers.forEach(function(marker) {
         marker.setMap(map);
-        marker.setIcon(iconInit);
+        marker.setIcon(iconList);
         marker.setAnimation(null);
       });
+    }
+
+    function resetPlaces() {
+      self.places([]);
     }
 
     function getPolygon() {
@@ -196,7 +202,6 @@ function app() {
     function createMarker(properties, addToMarkers) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
-      marker.setIcon(iconInit);
       marker.setMap(map);
       marker.addListener('click', function() {
         showInfoWindow(marker);
@@ -220,6 +225,7 @@ function app() {
     function initMap() {
       // Cria e posiciona os marcadores iniciais
       locations.forEach(function(location) {
+        location.icon = iconList;
         createMarker(location, true);
       });
       // Inicializa a lista
