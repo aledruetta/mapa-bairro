@@ -29,7 +29,6 @@ function app() {
     {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
   ];
 
-  var markers = [];
   var icons = {
     RED: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
     BLUE: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
@@ -43,13 +42,18 @@ function app() {
       text: ko.observable(''),
       reset: function() {
         this.text('');
-        view.markerList.items(markers);
+        view.markerList.reset();
       },
     };
 
     view.markerList = {
+      all: [],
       items: ko.observableArray([]),
       visible: ko.observable(true),
+
+      reset: function() {
+        this.items(this.all);
+      },
 
       filter: function(data, event) {
         // ESC limpa o campo de busca
@@ -57,7 +61,7 @@ function app() {
           view.search.reset();
         } else {
           var search = view.search.text().toLowerCase();
-          var filtered = markers.filter(function(marker) {
+          var filtered = view.markerList.all.filter(function(marker) {
             var title = marker.title.toLowerCase();
             return title.indexOf(search) !== -1;
           });
@@ -130,12 +134,12 @@ function app() {
         service.nearbySearch(request, function(results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             var points = ['bar', 'restaurant', 'food', 'lodging'];
-            var places = results.filter(function(place) {
+            var googleplaces = results.filter(function(place) {
               return points.some(function(point) {
                 return place.types.indexOf(point) !== -1;
               });
             });
-            places.forEach(function(place) {
+            googleplaces.forEach(function(place) {
               var name = capitalize(place.name);
               var position = place.geometry.location;
               if (position && position !== location) {
@@ -235,9 +239,9 @@ function app() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
       marker.setIcon(icons.RED);
-      markers.push(marker);
+      view.markerList.all.push(marker);
     });
-    view.markerList.items(markers);
+    view.markerList.reset();
     map.fitBounds(bounds);
     getPolygon();
   }
