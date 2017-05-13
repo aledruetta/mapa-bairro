@@ -1,13 +1,14 @@
 function app() {
   "use strict";
 
-  // objetos da API
+  // objetos Google Maps API
   var map = new google.maps.Map(document.getElementById('map'));
   var bounds = new google.maps.LatLngBounds();
   var infowindow = new google.maps.InfoWindow();
   var service = new google.maps.places.PlacesService(map);
+  var geocoder = new google.maps.Geocoder();
 
-  // Dados para marcadores inciais
+  // Dados para marcadores inciais e lista lateral
   var locations = [
     {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
     {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
@@ -29,15 +30,18 @@ function app() {
     {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
   ];
 
+  // Icones para marcadores
   var icons = {
     RED: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
     BLUE: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
     YELLOW: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
   };
 
+  ////////// View Model //////////
   function MapViewModel() {
     var view = this;
 
+    ///// Campo de busca /////
     view.search = {
       text: ko.observable(''),
       reset: function() {
@@ -46,13 +50,14 @@ function app() {
       },
     };
 
+    ///// Lista lateral /////
     view.markerList = {
       all: [],
-      items: ko.observableArray([]),
+      filtered: ko.observableArray([]),
       visible: ko.observable(true),
 
       reset: function() {
-        this.items(this.all);
+        this.filtered(this.all);
       },
 
       filter: function(data, event) {
@@ -65,7 +70,7 @@ function app() {
             var title = marker.title.toLowerCase();
             return title.indexOf(search) !== -1;
           });
-          view.markerList.items(filtered);
+          view.markerList.filtered(filtered);
         }
       },
 
@@ -86,19 +91,24 @@ function app() {
       },
     };
 
+    ///// Seção Places do Painel /////
     view.places = {
       items: ko.observableArray([]),
+
       click: function(marker) {
         showInfoWindow(marker);
+        view.infoPanel.getAddress(marker.getPosition());
       },
+
       reset: function() {
         this.items().forEach(function(place) {
           place.setMap(null);
         });
         this.items([]);
       },
-     };
+    };
 
+    ///// Painel contextual /////
     view.infoPanel = {
       title: ko.observable(''),
       wiki: ko.observable(''),
@@ -106,6 +116,7 @@ function app() {
       places: view.places,
       visible: ko.observable(false),
 
+      // Alterna visualização entre a Lista e o Painel
       toggle: function() {
         this.visible(view.markerList.visible());
         view.markerList.visible(!this.visible());
@@ -120,10 +131,23 @@ function app() {
       },
 
       update: function(target) {
-        this.toggle();
-        this.getNearBy(target.getPosition());
+        var location = target.getPosition();
         this.title(target.title);
-        this.address('bla, bla, bla...');
+        this.getNearBy(location);
+        this.getAddress(location);
+        this.toggle();
+      },
+
+      getAddress: function(location) {
+        geocoder.geocode({location: location}, function(results, status) {
+          if (status === google.maps.GeocoderStatus.OK) {
+            if (results[1]) {
+              view.infoPanel.address(results[0].formatted_address);
+            }
+          } else if (staus === google.maps.GeocoderStatus.ZERO_RESULTS) {
+            alert('fail');
+          }
+        });
       },
 
       getNearBy: function(location) {
@@ -131,17 +155,21 @@ function app() {
           location: location,
           radius: '1000',
         };
+
         service.nearbySearch(request, function(results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             var points = ['bar', 'restaurant', 'food', 'lodging'];
+
             var googleplaces = results.filter(function(place) {
               return points.some(function(point) {
                 return place.types.indexOf(point) !== -1;
               });
             });
+
             googleplaces.forEach(function(place) {
               var name = capitalize(place.name);
               var position = place.geometry.location;
+
               if (position && position !== location) {
                 var marker = createMarker({
                   title: name,
@@ -149,9 +177,11 @@ function app() {
                   animation: google.maps.Animation.DROP,
                   icon: icons.YELLOW,
                 });
+
                 view.places.items.push(marker);
               }
             });
+
             view.places.items.sort(function(a, b) {
               if (a.name < b.name) {
                 return -1;
@@ -241,6 +271,7 @@ function app() {
       marker.setIcon(icons.RED);
       view.markerList.all.push(marker);
     });
+
     view.markerList.reset();
     map.fitBounds(bounds);
     getPolygon();

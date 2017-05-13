@@ -39,7 +39,7 @@
           </div>
 
           <div class="overflow">
-            <div class="list-group marker-list" data-bind="foreach: markerList.items, visible: markerList.visible">
+            <div class="list-group marker-list" data-bind="foreach: markerList.filtered, visible: markerList.visible">
               <button type="button" name="button" class="list-group-item"
               data-bind="text: title, click: $root.markerList.click, event: {mouseover: $parent.mouseOverIcon, mouseout: $parent.mouseOutIcon}"></button>
             </div>
