@@ -15,12 +15,12 @@ function app() {
       {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
       {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
       {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
-      {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
       {title: 'Praia Vermelha do Sul', position: {lat: -23.5097394, lng: -45.1755504}},
+      {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
       {title: 'Praia de Santa Rita', position: {lat: -23.493743, lng: -45.102622}},
       {title: 'Praia Grande', position: {lat: -23.4716174, lng: -45.0690359}},
-      {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
       {title: 'Praia Vermelha do Centro', position: {lat: -23.4625236, lng: -45.0502857}},
+      {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
       {title: 'Praia Vermelha do Norte', position: {lat: -23.4191079, lng: -45.0390097}},
       {title: 'Praia Itamambuca', position: {lat: -23.4030911, lng: -45.0047297}},
       {title: 'Praia do Félix', position: {lat: -23.3905835, lng: -44.9740524}},
@@ -32,11 +32,13 @@ function app() {
       {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
     ];
 
-    // Marcadores temporais
     var tmpMarkers = [];
+    var markers = [];
+    var isIconToggled = false;
+    var iconInit = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+    var iconToggled = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 
     // Observables
-    self.markers = [];
     self.filtered = ko.observableArray([]);
     self.places = ko.observableArray([]);
     self.searchIn = ko.observable('');
@@ -48,12 +50,21 @@ function app() {
     self.clickLista = function(marker) {
       toggleInfoPanel();
       resetSeach();
+      getNearBy(marker.getPosition());
       updateMap(marker);
       self.infoPanel({
         title: marker.title,
         endereco: 'bla, bla, bla',
       });
-      getNearBy(marker.getPosition());
+    };
+
+    self.toggleIconColor = function(marker) {
+      isIconToggled = !isIconToggled;
+      if (isIconToggled) {
+        marker.setIcon(iconToggled);
+      } else {
+        marker.setIcon(iconInit);
+      }
     };
 
     function getNearBy(location) {
@@ -83,8 +94,13 @@ function app() {
     self.closeInfoPanel = function() {
       toggleInfoPanel();
       resetMarkers();
+      resetPlaces();
       map.fitBounds(bounds);
     };
+
+    function resetPlaces() {
+      self.places([]);
+    }
 
     // Alternar visulização entre lista de marcadores e informação contextual
     function toggleInfoPanel() {
@@ -96,11 +112,11 @@ function app() {
       resetMarkers();
       map.panTo(marker.position);
       map.setZoom(15);
+      marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
       marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
       }, 3000);
-      marker.setIcon('http://maps.google.com/mapfiles/kml/paddle/ylw-stars.png');
     }
 
     // Filtra marcadores dinamicamente segundo o digitado no campo de busca
@@ -110,7 +126,7 @@ function app() {
         resetSeach();
       } else {
         var search = self.searchIn().toLowerCase();
-        var filtered = self.markers.filter(function(marker) {
+        var filtered = markers.filter(function(marker) {
           var title = marker.title.toLowerCase();
           return title.indexOf(search) !== -1;
         });
@@ -121,19 +137,19 @@ function app() {
     // Limpa o campo de busca e reinicia a lista
     function resetSeach() {
       self.searchIn('');
-      self.filtered(self.markers);
+      self.filtered(markers);
     }
 
-    // Elimina os marcadores temporais
+    // Elimina os marcadores temporais, fecha infowindow
     // e reinicia configurações dos marcadores iniciais
     function resetMarkers() {
       infowindow.close();
       tmpMarkers.forEach(function(marker) {
         marker.setMap(null);
       });
-      self.markers.forEach(function(marker) {
+      markers.forEach(function(marker) {
         marker.setMap(map);
-        marker.setIcon(null);
+        marker.setIcon(iconInit);
         marker.setAnimation(null);
       });
     }
@@ -180,12 +196,13 @@ function app() {
     function createMarker(properties, addToMarkers) {
       var marker = new google.maps.Marker(properties);
       marker.setAnimation(google.maps.Animation.DROP);
+      marker.setIcon(iconInit);
       marker.setMap(map);
       marker.addListener('click', function() {
         showInfoWindow(marker);
       });
       if (addToMarkers) {
-        self.markers.push(marker);
+        markers.push(marker);
       } else {
         tmpMarkers.push(marker);
       }
@@ -206,7 +223,7 @@ function app() {
         createMarker(location, true);
       });
       // Inicializa a lista
-      self.filtered(self.markers);
+      self.filtered(markers);
       // Determina os limites do mapa
       map.fitBounds(bounds);
       // Desenha os limites do município
