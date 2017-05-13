@@ -63,3 +63,7 @@ body {
   font-size: 0.9em;
   cursor: pointer;
 }
+
+.list-places-item:hover {
+  color: #00f;
+}

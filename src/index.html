@@ -35,36 +35,36 @@
               </button>
             </span>
             <input type="text" class="form-control search-in" placeholder=""
-              data-bind="textInput: searchIn, event: {keyup: filterMarkers}">
+              data-bind="textInput: search.text, event: {keyup: markerList.filter}">
           </div>
 
           <div class="overflow">
-            <div class="list-group marker-list" data-bind="foreach: filtered, visible: showMarkerList">
+            <div class="list-group marker-list" data-bind="foreach: markerList.items, visible: markerList.visible">
               <button type="button" name="button" class="list-group-item"
-              data-bind="text: title, click: $parent.clickLista, event: {mouseover: $parent.mouseOverIcon, mouseout: $parent.mouseOutIcon}"></button>
+              data-bind="text: title, click: $root.markerList.click, event: {mouseover: $parent.mouseOverIcon, mouseout: $parent.mouseOutIcon}"></button>
             </div>
 
-            <div class="panel panel-default info" data-bind="with: infoPanel, visible: showInfoPanel">
+            <!-- InfoPanel -->
+            <div class="panel panel-default info" data-bind="with: infoPanel, visible: infoPanel.visible">
               <div class="panel-heading">
                 <span data-bind="text: title"></span>
-                <button type="button" class="close" data-bind="click: $parent.closeInfoPanel">
+                <button type="button" class="close" data-bind="click: close">
                   <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                 </button>
               </div>
 
               <ul class="list-group list-apis">
                 <li class="list-group-item">foto</li>
-                <li class="list-group-item" data-bind="text: endereco"></li>
+                <li class="list-group-item" data-bind="text: address"></li>
                 <li class="list-group-item">recomendações</li>
                 <li class="list-group-item">
                   <h4>Places</h4>
-                  <ul class="list-places" data-bind="foreach: $parent.places">
-                    <li class="list-places-item" data-bind="text: title,
-                      event: {mouseover: $root.mouseOverIcon, mouseout: $root.mouseOutIcon}"></li>
+                  <ul class="list-places" data-bind="foreach: places.items">
+                    <li class="list-places-item" data-bind="text: title, click: $parent.places.click"></li>
                   </ul>
                 </li>
               </ul>
-            </div>
+            </div> <!-- End InfoPanel -->
           </div>
         </aside>
 
