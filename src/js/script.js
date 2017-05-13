@@ -37,7 +37,7 @@ function app() {
     var isIconToggled = false;
     var iconList = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
     var iconPlaces = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
-    var iconTarget = 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+    var iconTarget = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
     var iconToggled = 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 
     // Observables
@@ -89,17 +89,24 @@ function app() {
             });
           });
           places.forEach(function(place) {
+            var name = capitalize(place.name);
             if (place.geometry.location !== location) {
               createMarker({
-                title: place.name,
+                title: name,
                 position: place.geometry.location,
                 icon: iconPlaces,
               }, false);
-              self.places.push(place.name);
+              self.places.push(name);
             }
           });
+          self.places.sort();
         }
       });
+    }
+
+    function capitalize(str) {
+      var lower = str.toLowerCase();
+      return lower.replace(/(?:^|\s)\S/g, function(first) {return first.toUpperCase();});
     }
 
     self.closeInfoPanel = function() {
@@ -110,11 +117,9 @@ function app() {
     };
 
     function updateMap(marker) {
-      resetMarkers();
       map.panTo(marker.position);
       map.setZoom(15);
       marker.setZIndex(google.maps.Marker.MAX_ZINDEX);
-      marker.setIcon(iconTarget);
       marker.setAnimation(google.maps.Animation.BOUNCE);
       window.setTimeout(function() {
         marker.setAnimation(null);
@@ -216,7 +221,7 @@ function app() {
 
     // Mostra popup infowindow
     function showInfoWindow(marker) {
-      infowindow.setContent(marker.title);
+      infowindow.setContent(capitalize(marker.title));
       infowindow.open(map, marker);
     }
 
