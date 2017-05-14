@@ -95,14 +95,15 @@ function app() {
     view.places = {
       items: ko.observableArray([]),
 
-      click: function(marker) {
-        showInfoWindow(marker);
-        view.infoPanel.getAddress(marker.getPosition());
+      click: function(item) {
+        showInfoWindow(item.marker);
+        view.infoPanel.getAddress(item.marker.getPosition());
+        view.infoPanel.photo(item.url);
       },
 
       reset: function() {
         this.items().forEach(function(place) {
-          place.setMap(null);
+          place.marker.setMap(null);
         });
         this.items([]);
       },
@@ -111,6 +112,7 @@ function app() {
     ///// Painel contextual /////
     view.infoPanel = {
       title: ko.observable(''),
+      photo: ko.observable(''),
       wiki: ko.observable(''),
       address: ko.observable(''),
       places: view.places,
@@ -126,6 +128,7 @@ function app() {
         infowindow.close();
         this.toggle();
         this.places.reset();
+        this.photo('');
         view.search.reset();
         map.fitBounds(bounds);
       },
@@ -169,6 +172,13 @@ function app() {
             googleplaces.forEach(function(place) {
               var name = capitalize(place.name);
               var position = place.geometry.location;
+              var url = '';
+
+              if (place.photos && place.photos !== 'undefined') {
+                url = place.photos[0].getUrl({
+                  maxWidth: 423,
+                });
+              }
 
               if (position && position !== location) {
                 var marker = createMarker({
@@ -178,14 +188,14 @@ function app() {
                   icon: icons.YELLOW,
                 });
 
-                view.places.items.push(marker);
+                view.places.items.push({marker: marker, url: url});
               }
             });
 
             view.places.items.sort(function(a, b) {
-              if (a.name < b.name) {
+              if (a.marker.name < b.marker.name) {
                 return -1;
-              } else if (a.name > b.name) {
+              } else if (a.marker.name > b.marker.name) {
                 return 1;
               }
               return 0;

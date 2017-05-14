@@ -47,6 +47,7 @@
             <!-- InfoPanel -->
             <div class="panel panel-default info" data-bind="with: infoPanel, visible: infoPanel.visible">
               <div class="panel-heading">
+                <!-- Título -->
                 <span data-bind="text: title"></span>
                 <button type="button" class="close" data-bind="click: close">
                   <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
@@ -54,13 +55,16 @@
               </div>
 
               <ul class="list-group list-apis">
-                <li class="list-group-item">foto</li>
-                <li class="list-group-item" data-bind="text: address"></li>
+                <!-- Foto -->
+                <li class="list-group-item photo">
+                  <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
+                </li>
+                <li class="list-group-item address" data-bind="text: address"></li>
                 <li class="list-group-item">recomendações</li>
-                <li class="list-group-item">
+                <li class="list-group-item places">
                   <h4>Places</h4>
                   <ul class="list-places" data-bind="foreach: places.items">
-                    <li class="list-places-item" data-bind="text: title, click: $parent.places.click"></li>
+                    <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
                   </ul>
                 </li>
               </ul>
