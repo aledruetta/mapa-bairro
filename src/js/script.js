@@ -77,12 +77,12 @@ function app() {
       click: function() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
-        view.markerList.updateMap(this);
+        view.markerList.panToMarker(this);
         view.infoPanel.update(this);
         view.search.reset();
       },
 
-      updateMap: function(marker) {
+      panToMarker: function(marker) {
         map.panTo(marker.position);
         map.setZoom(15);
         window.setTimeout(function() {
