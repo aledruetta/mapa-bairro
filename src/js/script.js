@@ -119,6 +119,7 @@ function app() {
         showInfoWindow(item.marker);
         view.infoPanel.getAddress(item.marker.getPosition());
         view.infoPanel.photo(item.url);
+        view.infoPanel.title(item.marker.title);
       },
 
       reset: function() {
@@ -210,9 +211,22 @@ function app() {
                   icon: icons.YELLOW,
                 });
 
-                view.places.items.push({marker: marker, url: url});
+                view.places.items().push({marker: marker, url: url});
               }
             });
+
+            var length = view.places.items().length;
+            for (var i = 0; i < length; i++) {
+              var item = view.places.items()[i];
+              var praia = item.marker.title.toLowerCase().indexOf('praia') !== -1;
+              if (item.url && praia) {
+                alert(item.marker.title);
+                view.infoPanel.photo(item.url);
+                break;
+              }
+            }
+
+            view.infoPanel.photo(view.places.items()[0].url);
 
             view.places.items.sort(function(a, b) {
               if (a.marker.name < b.marker.name) {
