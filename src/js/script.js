@@ -44,6 +44,7 @@ function app() {
     ///// Campo de busca /////
     view.search = {
       text: ko.observable(''),
+      enable: ko.observable(true),
       reset: function() {
         this.text('');
         view.markerList.reset();
@@ -97,7 +98,7 @@ function app() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
         view.markerList.panToMarker(this);
-        view.infoPanel.update(this);
+        view.infoPanel.open(this);
         view.search.reset();
       },
 
@@ -144,6 +145,7 @@ function app() {
       },
 
       close: function() {
+        view.search.enable(true);
         infowindow.close();
         this.toggle();
         this.places.reset();
@@ -152,8 +154,9 @@ function app() {
         map.fitBounds(bounds);
       },
 
-      update: function(target) {
+      open: function(target) {
         var location = target.getPosition();
+        view.search.enable(false);
         this.title(target.title);
         this.getNearBy(location);
         this.getAddress(location);
