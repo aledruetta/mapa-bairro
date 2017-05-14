@@ -28,6 +28,7 @@
       <div class="row">
 
         <aside class="col-sm-3 col-aside">
+          <!-- Search -->
           <div class="input-group" data-bind="with: search">
             <span class="input-group-btn">
               <button type="button" class="btn btn-success search-btn">
@@ -39,6 +40,7 @@
           </div>
 
           <div class="overflow">
+            <!-- Lista de marcadores -->
             <div class="list-group marker-list" data-bind="foreach: markerList.filtered, visible: markerList.visible">
               <button type="button" name="button" class="list-group-item"
               data-bind="text: title, click: $root.markerList.click, event: {mouseover: $parent.mouseOverIcon, mouseout: $parent.mouseOutIcon}"></button>
@@ -59,8 +61,10 @@
                 <li class="list-group-item photo">
                   <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
                 </li>
+                <!-- Endereço -->
                 <li class="list-group-item address" data-bind="text: address"></li>
                 <li class="list-group-item">recomendações</li>
+                <!-- Places -->
                 <li class="list-group-item places">
                   <h4>Places</h4>
                   <ul class="list-places" data-bind="foreach: places.items">
