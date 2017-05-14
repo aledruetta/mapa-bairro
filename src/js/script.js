@@ -56,8 +56,26 @@ function app() {
       filtered: ko.observableArray([]),
       visible: ko.observable(true),
 
+      renderMarkers: function() {
+        this.clearAll();
+        this.showFiltered();
+      },
+
+      clearAll: function() {
+        this.all.forEach(function(item) {
+          item.setVisible(false);
+        });
+      },
+
+      showFiltered: function() {
+        this.filtered().forEach(function(item) {
+          item.setVisible(true);
+        });
+      },
+
       reset: function() {
         this.filtered(this.all);
+        this.renderMarkers();
       },
 
       filter: function(data, event) {
@@ -71,6 +89,7 @@ function app() {
             return title.indexOf(search) !== -1;
           });
           view.markerList.filtered(filtered);
+          view.markerList.renderMarkers();
         }
       },
 
@@ -279,6 +298,7 @@ function app() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
       marker.setIcon(icons.RED);
+      marker.setVisible(false);
       view.markerList.all.push(marker);
     });
 
