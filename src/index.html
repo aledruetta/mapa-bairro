@@ -35,7 +35,7 @@
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
               </button>
             </span>
-            <input type="text" class="form-control search-in" placeholder=""
+            <input type="text" class="form-control search-in" placeholder="Filtrar resultados"
               data-bind="textInput: text, event: {keyup: $root.markerList.filter}, enable: enable">
           </div>
 
@@ -58,11 +58,11 @@
 
               <ul class="list-group list-apis">
                 <!-- Foto -->
-                <li class="list-group-item photo">
+                <li class="list-group-item photo" data-bind="visible: photo">
                   <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
                 </li>
                 <!-- Endereço -->
-                <li class="list-group-item address" data-bind="text: address"></li>
+                <li class="list-group-item address" data-bind="text: address, visible: address"></li>
                 <li class="list-group-item">recomendações</li>
                 <!-- Places -->
                 <li class="list-group-item places">
