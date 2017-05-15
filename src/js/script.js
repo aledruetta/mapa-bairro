@@ -37,7 +37,9 @@ function app() {
     YELLOW: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
   };
 
-  ////////// View Model //////////
+  ////////////////////////////////
+  //////// Map View Model ////////
+  ////////////////////////////////
   function MapViewModel() {
     var view = this;
 
@@ -45,6 +47,7 @@ function app() {
     view.search = {
       text: ko.observable(''),
       enable: ko.observable(true),
+
       reset: function() {
         this.text('');
         view.markerList.reset();
@@ -53,7 +56,7 @@ function app() {
 
     ///// Lista lateral /////
     view.markerList = {
-      all: [],
+      all: [],      // marcadores iniciais
       filtered: ko.observableArray([]),
       visible: ko.observable(true),
 
@@ -107,6 +110,7 @@ function app() {
     view.places = {
       items: ko.observableArray([]),
 
+      // Apresentar informação sobre o Place
       click: function(item) {
         panToMarker(item.marker, 18);
         showInfoWindow(item.marker);
@@ -143,6 +147,7 @@ function app() {
         view.markerList.visible(!this.visible());
       },
 
+      // Fechar Painel
       close: function() {
         view.search.enable(true);
         infowindow.close();
@@ -153,98 +158,29 @@ function app() {
         map.fitBounds(bounds);
       },
 
+      // Abrir Painel
       open: function(target) {
         var location = target.getPosition();
         view.search.enable(false);
         this.title(target.title);
-        this.getNearBy(location);
+
+        // Obter lista de Places e foto
+        getNearBy(location).then(function(response) {
+          view.places.items(response);
+          var url = selectPhoto(view.places.items());
+          view.infoPanel.photo(url);
+        }, function(error) {
+          alert(error);
+        });
+
+        // Obter endereço
         getAddress(location).then(function(response) {
           view.infoPanel.address(response);
         }, function(error) {
           alert(error);
         });
+
         this.toggle();
-      },
-
-      getNearBy: function(location) {
-        var request = {
-          location: location,
-          radius: '1000',
-        };
-
-        service.nearbySearch(request, function(results, status) {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            var matchs = ['bar', 'restaurant', 'food', 'lodging'];
-            var googleplaces = filterPlaces(matchs, results);
-
-            googleplaces.forEach(function(place) {
-              var name = capitalize(place.name);
-              var position = place.geometry.location;
-              var url = getUrlPhoto(place.photos);
-              var rating = place.rating;
-
-              if (position && position !== location) {
-                var marker = createMarker({
-                  title: name,
-                  position: place.geometry.location,
-                  animation: google.maps.Animation.DROP,
-                  icon: icons.YELLOW,
-                });
-
-                view.places.items().push({marker: marker, url: url, rating: rating});
-              }
-
-            });
-
-            var url = selectPhoto(view.places.items());
-            view.infoPanel.photo(url);
-
-            sortItems(view.places.items);
-          }
-        });
-
-        function filterPlaces(matchs, results) {
-          var filtered = results.filter(function(place) {
-            return matchs.some(function(match) {
-              return place.types.indexOf(match) !== -1;
-            });
-          });
-          return filtered;
-        }
-
-        function getUrlPhoto(placePhotos) {
-          if (placePhotos && placePhotos !== 'undefined') {
-            return placePhotos[0].getUrl({
-              maxWidth: 423,
-            });
-          }
-        }
-
-        function selectPhoto(places) {
-          var maxRating = 0;
-          var bestPlace = null;
-          for (var i = 0; i < places.length; i++) {
-            var place = places[i];
-            if (place.rating > maxRating && place.url) {
-              maxRating = place.rating;
-              bestPlace = place;
-            }
-          }
-          return bestPlace.url;
-        }
-
-        function sortItems(items) {
-          var sorted = items.sort(function(a, b) {
-            if (a.marker.title < b.marker.title) {
-              return -1;
-            } else if (a.marker.title > b.marker.title) {
-              return 1;
-            }
-            return 0;
-          });
-          return sorted;
-        }
-
       },
     };
 
@@ -257,19 +193,61 @@ function app() {
     };
   }
 
-  var view = new MapViewModel();
-  ko.applyBindings(view);
-
+  // Mostrar popup InfoWindow no marcador
   function showInfoWindow(marker) {
     infowindow.setContent(capitalize(marker.title));
     infowindow.open(map, marker);
   }
 
+  // Capitalizar string
   function capitalize(str) {
     var lower = str.toLowerCase();
     return lower.replace(/(?:^|\s)\S/g, function(first) {return first.toUpperCase();});
   }
 
+  // Obter lista de Places via NearbySearch service
+  function getNearBy(location) {
+    var request = {
+      location: location,
+      radius: '1000',
+    };
+
+    return new Promise(function(resolve, reject) {
+      service.nearbySearch(request, function(results, status) {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          var items = [];
+          var matchs = ['bar', 'restaurant', 'food', 'lodging'];
+          var googleplaces = filterPlaces(matchs, results);
+
+          googleplaces.forEach(function(place) {
+            var name = capitalize(place.name);
+            var position = place.geometry.location;
+            var url = getUrlPhoto(place.photos);
+            var rating = place.rating;
+
+            if (position && position !== location) {
+              var marker = createMarker({
+                title: name,
+                position: place.geometry.location,
+                animation: google.maps.Animation.DROP,
+                icon: icons.YELLOW,
+              });
+
+              items.push({marker: marker, url: url, rating: rating});
+            }
+          });
+
+          sortItems(items);
+          resolve(items);
+
+        } else {
+          reject(Error('NearbySearch service error: ' + status));
+        }
+      });
+    });
+  }
+
+  // Obter polígono
   function getPolygon() {
     // Carrega dados de polígono exportados do Open Street Map
     $.getJSON('/src/json/ubatuba_poly.txt', function(geoJsonTxt) {
@@ -297,6 +275,7 @@ function app() {
     });
   }
 
+  // Obter endereço via Geocoder
   function getAddress(location) {
     return new Promise(function(resolve, reject) {
       geocoder.geocode({location: location}, function(results, status) {
@@ -311,6 +290,53 @@ function app() {
     });
   }
 
+  // Filtrar Places segundo array de tipos
+  function filterPlaces(matchs, results) {
+    var filtered = results.filter(function(place) {
+      return matchs.some(function(match) {
+        return place.types.indexOf(match) !== -1;
+      });
+    });
+    return filtered;
+  }
+
+  // Obter URL do primeiro elemento do array
+  function getUrlPhoto(placePhotos) {
+    if (placePhotos && placePhotos !== 'undefined') {
+      return placePhotos[0].getUrl({
+        maxWidth: 423,
+      });
+    }
+  }
+
+  // Ordenar alfabeticamente um array de Places
+  function sortItems(items) {
+    var sorted = items.sort(function(a, b) {
+      if (a.marker.title < b.marker.title) {
+        return -1;
+      } else if (a.marker.title > b.marker.title) {
+        return 1;
+      }
+      return 0;
+    });
+    return sorted;
+  }
+
+  // Selecionar uma foto segundo rating do Places
+  function selectPhoto(places) {
+    var maxRating = 0;
+    var bestPlace = null;
+    for (var i = 0; i < places.length; i++) {
+      var place = places[i];
+      if (place.rating > maxRating && place.url) {
+        maxRating = place.rating;
+        bestPlace = place;
+      }
+    }
+    return bestPlace.url;
+  }
+
+  // Centralizar mapa no marcador, aplicar zoom e animação
   function panToMarker(marker, zoom) {
     map.panTo(marker.position);
     map.setZoom(zoom);
@@ -319,6 +345,7 @@ function app() {
     }, 3000);
   }
 
+  // Aplicar estilo do polígono
   function setStyleMap() {
     map.data.setStyle(function(feature) {
       var style = {};
@@ -329,6 +356,7 @@ function app() {
     });
   }
 
+  // Crear marcador
   function createMarker(properties) {
     var marker = new google.maps.Marker(properties);
     marker.setMap(map);
@@ -340,6 +368,7 @@ function app() {
     return marker;
   }
 
+  // Inicializar mapa com marcadores iniciais, bounds e polígono
   function initMap() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
@@ -352,6 +381,9 @@ function app() {
     map.fitBounds(bounds);
     getPolygon();
   }
+
+  var view = new MapViewModel();
+  ko.applyBindings(view);
 
   initMap();
 }
