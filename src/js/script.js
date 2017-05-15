@@ -184,24 +184,14 @@ function app() {
 
         service.nearbySearch(request, function(results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
-            var points = ['bar', 'restaurant', 'food', 'lodging'];
-
-            var googleplaces = results.filter(function(place) {
-              return points.some(function(point) {
-                return place.types.indexOf(point) !== -1;
-              });
-            });
+            var matchs = ['bar', 'restaurant', 'food', 'lodging'];
+            var googleplaces = filterPlaces(matchs, results);
 
             googleplaces.forEach(function(place) {
               var name = capitalize(place.name);
               var position = place.geometry.location;
-              var url = '';
-
-              if (place.photos && place.photos !== 'undefined') {
-                url = place.photos[0].getUrl({
-                  maxWidth: 423,
-                });
-              }
+              var url = getUrlPhoto(place.photos);
+              var rating = place.rating;
 
               if (position && position !== location) {
                 var marker = createMarker({
@@ -211,33 +201,60 @@ function app() {
                   icon: icons.YELLOW,
                 });
 
-                view.places.items().push({marker: marker, url: url});
+                view.places.items().push({marker: marker, url: url, rating: rating});
               }
+
             });
 
-            var length = view.places.items().length;
-            for (var i = 0; i < length; i++) {
-              var item = view.places.items()[i];
-              var praia = item.marker.title.toLowerCase().indexOf('praia') !== -1;
-              if (item.url && praia) {
-                alert(item.marker.title);
-                view.infoPanel.photo(item.url);
-                break;
-              }
-            }
+            var url = selectPhoto(view.places.items());
+            view.infoPanel.photo(url);
 
-            view.infoPanel.photo(view.places.items()[0].url);
-
-            view.places.items.sort(function(a, b) {
-              if (a.marker.name < b.marker.name) {
-                return -1;
-              } else if (a.marker.name > b.marker.name) {
-                return 1;
-              }
-              return 0;
-            });
+            sortItems(view.places.items);
           }
         });
+
+        function filterPlaces(matchs, results) {
+          var filtered = results.filter(function(place) {
+            return matchs.some(function(match) {
+              return place.types.indexOf(match) !== -1;
+            });
+          });
+          return filtered;
+        }
+
+        function getUrlPhoto(placePhotos) {
+          if (placePhotos && placePhotos !== 'undefined') {
+            return placePhotos[0].getUrl({
+              maxWidth: 423,
+            });
+          }
+        }
+
+        function selectPhoto(places) {
+          var maxRating = 0;
+          var bestPlace = null;
+          for (var i = 0; i < places.length; i++) {
+            var place = places[i];
+            if (place.rating > maxRating && place.url) {
+              maxRating = place.rating;
+              bestPlace = place;
+            }
+          }
+          return bestPlace.url;
+        }
+
+        function sortItems(items) {
+          var sorted = items.sort(function(a, b) {
+            if (a.marker.title < b.marker.title) {
+              return -1;
+            } else if (a.marker.title > b.marker.title) {
+              return 1;
+            }
+            return 0;
+          });
+          return sorted;
+        }
+
       },
     };
 
