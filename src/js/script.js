@@ -110,7 +110,13 @@ function app() {
       click: function(item) {
         panToMarker(item.marker, 18);
         showInfoWindow(item.marker);
-        view.infoPanel.getAddress(item.marker.getPosition());
+        view.infoPanel.getAddress(item.marker.getPosition())
+          .then(function(response) {
+            view.infoPanel.address(response);
+          }, function(error) {
+            alert(error);
+          });
+        view.infoPanel.getAddress();
         view.infoPanel.photo(item.url);
         view.infoPanel.title(item.marker.title);
       },
@@ -153,21 +159,39 @@ function app() {
         view.search.enable(false);
         this.title(target.title);
         this.getNearBy(location);
-        this.getAddress(location);
+        this.getAddress(location).then(function(response) {
+          view.infoPanel.address(response);
+        }, function(error) {
+          alert(error);
+        });
         this.toggle();
       },
 
       getAddress: function(location) {
-        geocoder.geocode({location: location}, function(results, status) {
-          if (status === google.maps.GeocoderStatus.OK) {
-            if (results[1]) {
-              view.infoPanel.address(results[0].formatted_address);
+        return new Promise(function(resolve, reject) {
+          geocoder.geocode({location: location}, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+              if (results[1]) {
+                resolve(results[0].formatted_address);
+              }
+            } else if (staus === google.maps.GeocoderStatus.ZERO_RESULTS) {
+              reject(Error('Geocoder status: ' + status));
             }
-          } else if (staus === google.maps.GeocoderStatus.ZERO_RESULTS) {
-            alert('fail');
-          }
+          });
         });
       },
+
+      // getAddress: function(location) {
+      //   geocoder.geocode({location: location}, function(results, status) {
+      //     if (status === google.maps.GeocoderStatus.OK) {
+      //       if (results[1]) {
+      //         view.infoPanel.address(results[0].formatted_address);
+      //       }
+      //     } else if (staus === google.maps.GeocoderStatus.ZERO_RESULTS) {
+      //       alert('fail');
+      //     }
+      //   });
+      // },
 
       getNearBy: function(location) {
         var request = {
