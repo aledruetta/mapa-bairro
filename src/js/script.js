@@ -97,17 +97,9 @@ function app() {
       click: function() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
-        view.markerList.panToMarker(this);
+        panToMarker(this, 15);
         view.infoPanel.open(this);
         view.search.reset();
-      },
-
-      panToMarker: function(marker) {
-        map.panTo(marker.position);
-        map.setZoom(15);
-        window.setTimeout(function() {
-          marker.setAnimation(null);
-        }, 3000);
       },
     };
 
@@ -116,6 +108,7 @@ function app() {
       items: ko.observableArray([]),
 
       click: function(item) {
+        panToMarker(item.marker, 18);
         showInfoWindow(item.marker);
         view.infoPanel.getAddress(item.marker.getPosition());
         view.infoPanel.photo(item.url);
@@ -305,6 +298,14 @@ function app() {
       // Aplica estilo
       setStyleMap();
     });
+  }
+
+  function panToMarker(marker, zoom) {
+    map.panTo(marker.position);
+    map.setZoom(zoom);
+    window.setTimeout(function() {
+      marker.setAnimation(null);
+    }, 3000);
   }
 
   function setStyleMap() {
