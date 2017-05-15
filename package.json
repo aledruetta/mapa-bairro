@@ -6,12 +6,13 @@
   "author": "Alejandro Druetta <aledruetta@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs"
+    "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs cp node_modules/q/q.js src/libs"
   },
   "dependencies": {},
   "devDependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
-    "knockout": "^3.4.2"
+    "knockout": "^3.4.2",
+    "q": "^1.5.0"
   }
 }
