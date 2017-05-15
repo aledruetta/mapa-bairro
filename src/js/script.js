@@ -165,6 +165,13 @@ function app() {
           alert(error);
         });
 
+        // Obter informação da Wikipedia
+        getWiki(target.title).then(function(response) {
+          view.infoPanel.wiki(response);
+        }, function(error) {
+          alert(error);
+        });
+
         // Obter endereço
         getAddress(location).then(function(response) {
           view.infoPanel.address(response);
@@ -201,7 +208,7 @@ function app() {
   function getNearBy(location) {
     var request = {
       location: location,
-      radius: '1000',
+      radius: '500',
     };
 
     return new Promise(function(resolve, reject) {
@@ -235,6 +242,26 @@ function app() {
         } else {
           reject(Error('NearbySearch service error: ' + status));
         }
+      });
+    });
+  }
+
+  function getWiki(title) {
+    var endpoint = 'https://es.wikipedia.org/w/api.php?';
+    var query = 'format=json&action=opensearch&search=%search%&limit=1&callback=?';
+    var url = endpoint + query.replace(/%search%/, title);
+
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        url: url,
+        dataType: 'jsonp',
+        success: function(response) {
+          if (response) {
+            resolve(response[2][0]);
+          } else {
+            reject(Error('Wikipedia error'));
+          }
+        },
       });
     });
   }
