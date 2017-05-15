@@ -10,24 +10,16 @@ function app() {
 
   // Dados para marcadores inciais e lista lateral
   var locations = [
-    {title: 'Praia de Picinguaba', position: {lat: -23.377047, lng: -44.839927}},
-    {title: 'Praia da Fazenda', position: {lat: -23.3696992, lng: -44.8582248}},
-    {title: 'Praia da Almada', position: {lat: -23.3606441, lng: -44.8904074}},
-    {title: 'Praia Ubatumirim', position: {lat: -23.3345485, lng: -44.9042858}},
-    {title: 'Praia da Puruba', position: {lat: -23.3586419, lng: -44.9444224}},
-    {title: 'Praia do Prumirim', position: {lat: -23.3848589, lng: -44.967505}},
-    {title: 'Praia do Félix', position: {lat: -23.3905835, lng: -44.9740524}},
-    {title: 'Praia Itamambuca', position: {lat: -23.4030911, lng: -45.0047297}},
-    {title: 'Praia Vermelha do Norte', position: {lat: -23.4191079, lng: -45.0390097}},
-    {title: 'Praia do Cedro', position: {lat: -23.4599192, lng: -45.0372474}},
-    {title: 'Praia Vermelha do Centro', position: {lat: -23.4625236, lng: -45.0502857}},
-    {title: 'Praia Grande', position: {lat: -23.4716174, lng: -45.0690359}},
-    {title: 'Praia de Santa Rita', position: {lat: -23.493743, lng: -45.102622}},
-    {title: 'Praia Dura', position: {lat: -23.4940736, lng: -45.1730874}},
-    {title: 'Praia Vermelha do Sul', position: {lat: -23.5097394, lng: -45.1755504}},
-    {title: 'Praia da Lagoinha', position: {lat: -23.5198202, lng: -45.2003742}},
-    {title: 'Praia de Maranduba', position: {lat: -23.54036, lng: -45.225302}},
-    {title: 'Praia da Caçandoca', position: {lat: -23.5621619, lng: -45.2234441}},
+    {title: 'Casa Rosada', position: {lat: -34.608054, lng: -58.370286}},
+    {title: 'Plaza de Mayo', position: {lat: -34.608396, lng: -58.372164}},
+    {title: 'Museo Casa Rosada', position: {lat: -34.608706, lng: -58.369563}},
+    {title: 'Luna Park (Buenos Aires)', position: {lat: -34.602305, lng: -58.368752}},
+    {title: 'Puerto Madero', position: {lat: -34.605135, lng: -58.365641}},
+    {title: 'Plaza del Congreso', position: {lat: -34.609821, lng: -58.392606}},
+    {title: 'Obelisco de Buenos Aires', position: {lat: -34.603736, lng: -58.381573}},
+    {title: 'Teatro Colón', position: {lat: -34.601139, lng: -58.38315}},
+    {title: 'Galerías Pacífico', position: {lat: -34.599196, lng: -58.374867}},
+    {title: 'Centro Cultural Néstor Kirchner', position: {lat: -34.603495, lng: -58.369553}},
   ];
 
   // Icones para marcadores
@@ -378,6 +370,7 @@ function app() {
     });
 
     view.markerList.reset();
+    map.setZoom(18);
     map.fitBounds(bounds);
     getPolygon();
   }
