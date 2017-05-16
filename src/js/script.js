@@ -15,7 +15,7 @@ function app() {
     {title: 'Museo Casa Rosada', position: {lat: -34.608706, lng: -58.369563}},
     {title: 'Luna Park (Buenos Aires)', position: {lat: -34.602305, lng: -58.368752}},
     {title: 'Puerto Madero', position: {lat: -34.605135, lng: -58.365641}},
-    {title: 'Plaza del Congreso', position: {lat: -34.609821, lng: -58.392606}},
+    {title: 'Plaza del Congreso', position: {lat: -34.609708, lng: -58.390334}},
     {title: 'Obelisco de Buenos Aires', position: {lat: -34.603736, lng: -58.381573}},
     {title: 'Teatro Colón', position: {lat: -34.601139, lng: -58.38315}},
     {title: 'Galerías Pacífico', position: {lat: -34.599196, lng: -58.374867}},
@@ -102,6 +102,7 @@ function app() {
             alert(error);
           });
         view.infoPanel.flickr(false);
+        view.infoPanel.wiki(false);
         view.infoPanel.photo(item.url);
         view.infoPanel.title(item.marker.title);
       },
@@ -420,9 +421,11 @@ function app() {
 
   // Crear marcador
   function createMarker(properties) {
+    // Marker inheritance
     var googleMapsMarker = new google.maps.Marker(properties);
     var marker = Object.create(googleMapsMarker);
     var proto = Object.getPrototypeOf(marker);
+    // método visible() observable
     proto.visible = ko.observable(true);
     proto.setVisible = function(bool) {
       this.visible(bool);
