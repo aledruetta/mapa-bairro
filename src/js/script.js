@@ -63,17 +63,12 @@ function app() {
         });
       },
 
-      showFiltered: function() {
-        this.filtered().forEach(function(item) {
-          item.setVisible(true);
-        });
-      },
-
       reset: function() {
         this.filtered(this.all);
         this.renderMarkers();
       },
 
+      // Filtra items da lista segundo uma string
       filter: function(data, event) {
         // ESC limpa o campo de busca
         if (event.keyCode === 27) {
@@ -89,6 +84,13 @@ function app() {
         }
       },
 
+      showFiltered: function() {
+        this.filtered().forEach(function(item) {
+          item.setVisible(true);
+        });
+      },
+
+      // Apresenta item selecionado na lista
       click: function() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
@@ -142,11 +144,14 @@ function app() {
       // Fechar Painel
       close: function() {
         view.search.enable(true);
-        infowindow.close();
-        this.toggle();
-        this.places.reset();
-        this.photo('');
         view.search.reset();
+        infowindow.close();
+        this.title('');
+        this.photo('');
+        this.wiki('');
+        this.address('');
+        this.places.reset();
+        this.toggle();
         map.fitBounds(bounds);
       },
 
@@ -160,7 +165,13 @@ function app() {
         getNearBy(location).then(function(response) {
           view.places.items(response);
           var url = selectPhoto(view.places.items());
-          view.infoPanel.photo(url);
+          // view.infoPanel.photo(url);
+        }, function(error) {
+          alert(error);
+        });
+
+        getFlickr(target.title).then(function(response) {
+          view.infoPanel.photo(response);
         }, function(error) {
           alert(error);
         });
@@ -224,7 +235,7 @@ function app() {
             var url = getUrlPhoto(place.photos);
             var rating = place.rating;
 
-            if (position && position !== location) {
+            if (url && position && position !== location) {
               var marker = createMarker({
                 title: name,
                 position: place.geometry.location,
@@ -246,10 +257,43 @@ function app() {
     });
   }
 
+  function getFlickr(title) {
+    var endpoint = 'https://api.flickr.com/services/rest/?';
+    var query = 'method=%method%&api_key=%api_key%&text=%text%&license=%license%&content_type=%content_type%&per_page=%per_page%&format=%format%&sort=%sort%&extras=%extras%&nojsoncallback=1';
+    var url = endpoint + query
+      .replace(/%method%/, 'flickr.photos.search')
+      .replace(/%api_key%/, '9d759785085216b5915d3e5586188a67')
+      .replace(/%text%/, title + ' Buenos Aires')
+      .replace(/%license%/, '1,2,3,4,5,6,7')
+      .replace(/%content_type%/, 1)
+      .replace(/%per_page%/, 1)
+      .replace(/%format%/, 'json')
+      .replace(/%sort%/, 'relevance')
+      .replace(/%extras%/, 'url_m');
+
+    return new Promise(function(resolve, reject) {
+      $.ajax({
+        url: url,
+        dataType: 'json',
+        success: function(response) {
+          if (response) {
+            resolve(response.photos.photo[0].url_m);
+          } else {
+            reject(Error('Flickr error'));
+          }
+        }
+      });
+    });
+  }
+
   function getWiki(title) {
     var endpoint = 'https://es.wikipedia.org/w/api.php?';
-    var query = 'format=json&action=opensearch&search=%search%&limit=1&callback=?';
-    var url = endpoint + query.replace(/%search%/, title);
+    var query = 'format=%format%&action=%action%&search=%search%&limit=%limit%&callback=?';
+    var url = endpoint + query
+      .replace(/%format%/, 'json')
+      .replace(/%action%/, 'opensearch')
+      .replace(/%search%/, title)
+      .replace(/%limit%/, 1);
 
     return new Promise(function(resolve, reject) {
       $.ajax({
@@ -399,7 +443,7 @@ function app() {
     view.markerList.reset();
     map.setZoom(18);
     map.fitBounds(bounds);
-    getPolygon();
+    // getPolygon();
   }
 
   var view = new MapViewModel();
