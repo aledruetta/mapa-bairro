@@ -95,6 +95,7 @@ function app() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
         panToMarker(this, 15);
+        showInfoWindow(this);
         view.infoPanel.open(this);
         view.search.reset();
       },
@@ -145,8 +146,8 @@ function app() {
 
       // Fechar Painel
       close: function() {
-        view.search.enable(true);
         view.search.reset();
+        view.search.enable(true);
         infowindow.close();
         this.title('');
         this.photo('');
@@ -243,7 +244,7 @@ function app() {
                 title: name,
                 position: place.geometry.location,
                 animation: google.maps.Animation.DROP,
-                icon: icons.YELLOW,
+                icon: icons.YELLOW
               });
 
               items.push({marker: marker, url: url, rating: rating});
