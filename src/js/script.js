@@ -437,14 +437,14 @@ function app() {
     var googleMapsMarker = new google.maps.Marker(properties);
     var marker = Object.create(googleMapsMarker);
     var proto = Object.getPrototypeOf(marker);
-    // método visible() observable
-    proto.visible = ko.observable(true);
+
+    proto.filtered = ko.observable(true);
+    proto.oldSetVisible = proto.setVisible;
     proto.setVisible = function(bool) {
-      this.visible(bool);
+      this.oldSetVisible(bool);
+      this.filtered(bool);
     };
-    proto.getVisible = function() {
-      return this.visible();
-    };
+
     marker.setMap(map);
     marker.setVisible(true);
     marker.addListener('click', function() {
