@@ -12,16 +12,10 @@ body {
   margin-bottom: 0;
 }
 
-.col-aside {
-  padding: 0;
-  min-width: 255px;
-}
-
 .map,
 .col-aside {
-  display: flex;
-  flex-direction: column;
   height: calc(100vh - 50px);
+  padding: 0;
 }
 
 .search-in,
@@ -30,13 +24,11 @@ body {
 }
 
 .overflow {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   overflow-y: auto;
 }
 
 .marker-list {
+  height: calc(100vh - 84px);
   margin-bottom: 0;
 }
 
@@ -50,7 +42,7 @@ body {
 }
 
 .info {
-  height: 100%;
+  height: calc(100vh - 50px);
   border-radius: 0;
   border-top: 0;
   margin-bottom: 0;

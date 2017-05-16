@@ -19,15 +19,21 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
       </div>
     </nav>
 
     <div class="container-fluid">
       <div class="row">
 
-        <aside class="col-sm-3 col-aside">
+        <aside class="col-sm-3 col-aside" id="collapse">
           <!-- Search -->
           <div class="input-group" data-bind="with: search, visible: search.visible">
             <span class="input-group-btn">
@@ -39,56 +45,55 @@
               data-bind="textInput: text, event: {keyup: $root.markerList.filter}">
           </div>
 
-          <div class="overflow">
-            <!-- Lista de marcadores -->
-            <div class="list-group marker-list" data-bind="foreach: markerList.items,
-                                                           visible: markerList.visible">
-              <button type="button" name="button" class="list-group-item"
-              data-bind="text: title,
-                         click: $root.markerList.click,
-                         event: {mouseover: $root.mouseOverIcon, mouseout: $root.mouseOutIcon},
-                         visible: filtered"></button>
+          <!-- Lista de marcadores -->
+          <div class="list-group marker-list overflow" data-bind="foreach: markerList.items,
+                                                         visible: markerList.visible">
+            <button type="button" name="button" class="list-group-item"
+            data-bind="text: title,
+                       click: $root.markerList.click,
+                       event: {mouseover: $root.mouseOverIcon, mouseout: $root.mouseOutIcon},
+                       visible: filtered"></button>
+          </div>
+
+          <!-- InfoPanel -->
+          <div class="panel panel-default info overflow" data-bind="with: infoPanel, visible: infoPanel.visible">
+            <div class="panel-heading info-heading">
+              <!-- Título -->
+              <span data-bind="text: title"></span>
+              <button type="button" class="close info-close" data-bind="click: close">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              </button>
             </div>
 
-            <!-- InfoPanel -->
-            <div class="panel panel-default info" data-bind="with: infoPanel, visible: infoPanel.visible">
-              <div class="panel-heading info-heading">
-                <!-- Título -->
-                <span data-bind="text: title"></span>
-                <button type="button" class="close info-close" data-bind="click: close">
-                  <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                </button>
-              </div>
-
-              <ul class="list-group list-apis">
-                <!-- Foto -->
-                <li class="list-group-item photo" data-bind="visible: photo">
-                  <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
-                  <img src="https://s.yimg.com/pw/images/goodies/white-flickr.png" alt="Flickr logo" class="flickr" data-bind="visible: flickr">
-                </li>
-                <!-- Endereço -->
-                <li class="list-group-item address" data-bind="text: address, visible: address"></li>
-                <!-- Wiki -->
-                <li class="list-group-item wiki" data-bind="visible: wiki">
-                  <h3 class="api-title">Wikipédia</h3>
-                  <p data-bind="text: wiki"></p>
-                </li>
-                <!-- Places -->
-                <li class="list-group-item places">
-                  <h3 class="api-title">Google Places</h3>
-                  <ul class="list-places" data-bind="foreach: places.items">
-                    <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
-                  </ul>
-                </li>
-              </ul>
-            </div> <!-- End InfoPanel -->
-          </div>
+            <ul class="list-group list-apis">
+              <!-- Foto -->
+              <li class="list-group-item photo" data-bind="visible: photo">
+                <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
+                <img src="https://s.yimg.com/pw/images/goodies/white-flickr.png" alt="Flickr logo" class="flickr" data-bind="visible: flickr">
+              </li>
+              <!-- Endereço -->
+              <li class="list-group-item address" data-bind="text: address, visible: address"></li>
+              <!-- Wiki -->
+              <li class="list-group-item wiki" data-bind="visible: wiki">
+                <h3 class="api-title">Wikipédia</h3>
+                <p data-bind="text: wiki"></p>
+              </li>
+              <!-- Places -->
+              <li class="list-group-item places">
+                <h3 class="api-title">Google Places</h3>
+                <ul class="list-places" data-bind="foreach: places.items">
+                  <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
+                </ul>
+              </li>
+            </ul>
+          </div> <!-- End InfoPanel -->
         </aside>
 
-        <div id="map" class="map"></div>
-
+        <!-- Map -->
+        <main id="map" class="col-sm-9 map"></main>
       </div>
     </div>
+
 
     <script src="libs/knockout-latest.js"></script>
     <script src="libs/jquery.min.js"></script>
