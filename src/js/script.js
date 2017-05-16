@@ -42,38 +42,19 @@ function app() {
 
       reset: function() {
         this.text('');
-        view.markerList.reset();
+        view.markerList.showAll(true);
       },
     };
 
     ///// Lista lateral /////
     view.markerList = {
-      all: [],      // marcadores iniciais
-      filtered: ko.observableArray([]),
+      items: ko.observableArray([]),
       visible: ko.observable(true),
 
-      // Visualiza os marcadores filtrados
-      renderMarkers: function() {
-        this.clearAll();
-        this.showFiltered();
-      },
-
       // Oculta todos
-      clearAll: function() {
-        this.all.forEach(function(item) {
-          item.setVisible(false);
-        });
-      },
-
-      // Visualiza todos
-      reset: function() {
-        this.filtered(this.all);
-        this.renderMarkers();
-      },
-
-      showFiltered: function() {
-        this.filtered().forEach(function(item) {
-          item.setVisible(true);
+      showAll: function(bool) {
+        this.items().forEach(function(item) {
+          item.setVisible(bool);
         });
       },
 
@@ -84,12 +65,14 @@ function app() {
           view.search.reset();
         } else {
           var search = view.search.text().toLowerCase();
-          var filtered = view.markerList.all.filter(function(marker) {
-            var title = marker.title.toLowerCase();
-            return title.indexOf(search) !== -1;
+          view.markerList.items().forEach(function(item) {
+            var title = item.title.toLowerCase();
+            if (title.indexOf(search) !== -1) {
+              item.setVisible(true);
+            } else {
+              item.setVisible(false);
+            }
           });
-          view.markerList.filtered(filtered);
-          view.markerList.renderMarkers();
         }
       },
 
@@ -266,7 +249,9 @@ function app() {
 
   function getFlickr(title) {
     var endpoint = 'https://api.flickr.com/services/rest/?';
-    var query = 'method=%method%&api_key=%api_key%&text=%text%&license=%license%&content_type=%content_type%&per_page=%per_page%&format=%format%&sort=%sort%&extras=%extras%&nojsoncallback=1';
+    var query = 'method=%method%&api_key=%api_key%&text=%text%&license=%license%' +
+      '&content_type=%content_type%&per_page=%per_page%&format=%format%&sort=%sort%' +
+      '&extras=%extras%&nojsoncallback=1';
     var url = endpoint + query
       .replace(/%method%/, 'flickr.photos.search')
       .replace(/%api_key%/, 'e7578e7c5110616e04eb5e44bcc7a892')
@@ -435,8 +420,18 @@ function app() {
 
   // Crear marcador
   function createMarker(properties) {
-    var marker = new google.maps.Marker(properties);
+    var googleMapsMarker = new google.maps.Marker(properties);
+    var marker = Object.create(googleMapsMarker);
+    var proto = Object.getPrototypeOf(marker);
+    proto.visible = ko.observable(true);
+    proto.setVisible = function(bool) {
+      this.visible(bool);
+    };
+    proto.getVisible = function() {
+      return this.visible();
+    };
     marker.setMap(map);
+    marker.setVisible(true);
     marker.addListener('click', function() {
       showInfoWindow(marker);
     });
@@ -450,11 +445,9 @@ function app() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
       marker.setIcon(icons.RED);
-      marker.setVisible(false);
-      view.markerList.all.push(marker);
+      view.markerList.items.push(marker);
     });
 
-    view.markerList.reset();
     map.setZoom(18);
     map.fitBounds(bounds);
     // getPolygon();
