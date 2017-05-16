@@ -60,14 +60,18 @@
                 <!-- Foto -->
                 <li class="list-group-item photo" data-bind="visible: photo">
                   <img alt="" class="img-responsive photo-img" data-bind="attr: {src: photo}">
+                  <img src="https://s.yimg.com/pw/images/goodies/white-flickr.png" alt="Flickr logo" class="flickr" data-bind="visible: flickr">
                 </li>
                 <!-- Endereço -->
                 <li class="list-group-item address" data-bind="text: address, visible: address"></li>
                 <!-- Wiki -->
-                <li class="list-group-item wiki" data-bind="text: wiki, visible: wiki"></li>
+                <li class="list-group-item wiki">
+                  <h3 class="api-title">Wikipédia</h3>
+                  <p data-bind="text: wiki, visible: wiki"></p>
+                </li>
                 <!-- Places -->
                 <li class="list-group-item places">
-                  <h4>Places</h4>
+                  <h3 class="api-title">Google Places</h3>
                   <ul class="list-places" data-bind="foreach: places.items">
                     <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
                   </ul>

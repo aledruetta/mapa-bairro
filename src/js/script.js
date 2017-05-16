@@ -114,6 +114,7 @@ function app() {
           }, function(error) {
             alert(error);
           });
+        view.infoPanel.flickr(false);
         view.infoPanel.photo(item.url);
         view.infoPanel.title(item.marker.title);
       },
@@ -130,6 +131,7 @@ function app() {
     view.infoPanel = {
       title: ko.observable(''),
       photo: ko.observable(''),
+      flickr: ko.observable(false),
       wiki: ko.observable(''),
       address: ko.observable(''),
       places: view.places,
@@ -172,6 +174,7 @@ function app() {
 
         getFlickr(target.title).then(function(response) {
           view.infoPanel.photo(response);
+          view.infoPanel.flickr(true);
         }, function(error) {
           alert(error);
         });
@@ -262,13 +265,13 @@ function app() {
     var query = 'method=%method%&api_key=%api_key%&text=%text%&license=%license%&content_type=%content_type%&per_page=%per_page%&format=%format%&sort=%sort%&extras=%extras%&nojsoncallback=1';
     var url = endpoint + query
       .replace(/%method%/, 'flickr.photos.search')
-      .replace(/%api_key%/, '9d759785085216b5915d3e5586188a67')
+      .replace(/%api_key%/, 'e7578e7c5110616e04eb5e44bcc7a892')
       .replace(/%text%/, title + ' Buenos Aires')
       .replace(/%license%/, '1,2,3,4,5,6,7')
       .replace(/%content_type%/, 1)
-      .replace(/%per_page%/, 1)
+      .replace(/%per_page%/, 10)
       .replace(/%format%/, 'json')
-      .replace(/%sort%/, 'relevance')
+      .replace(/%sort%/, '')
       .replace(/%extras%/, 'url_m');
 
     return new Promise(function(resolve, reject) {
@@ -277,7 +280,14 @@ function app() {
         dataType: 'json',
         success: function(response) {
           if (response) {
-            resolve(response.photos.photo[0].url_m);
+            for (var i = 0; i < response.photos.photo.length; i++) {
+              var item = response.photos.photo[i];
+              if (Number(item.height_m) < Number(item.width_m)) {
+                resolve(item.url_m);
+                break;
+              }
+            }
+            // resolve(response.photos.photo[0].url_m);
           } else {
             reject(Error('Flickr error'));
           }
