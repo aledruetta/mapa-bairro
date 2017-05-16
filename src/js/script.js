@@ -52,20 +52,29 @@ function app() {
       filtered: ko.observableArray([]),
       visible: ko.observable(true),
 
+      // Visualiza os marcadores filtrados
       renderMarkers: function() {
         this.clearAll();
         this.showFiltered();
       },
 
+      // Oculta todos
       clearAll: function() {
         this.all.forEach(function(item) {
           item.setVisible(false);
         });
       },
 
+      // Visualiza todos
       reset: function() {
         this.filtered(this.all);
         this.renderMarkers();
+      },
+
+      showFiltered: function() {
+        this.filtered().forEach(function(item) {
+          item.setVisible(true);
+        });
       },
 
       // Filtra items da lista segundo uma string
@@ -82,12 +91,6 @@ function app() {
           view.markerList.filtered(filtered);
           view.markerList.renderMarkers();
         }
-      },
-
-      showFiltered: function() {
-        this.filtered().forEach(function(item) {
-          item.setVisible(true);
-        });
       },
 
       // Apresenta item selecionado na lista
