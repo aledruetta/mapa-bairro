@@ -56,6 +56,17 @@ body {
   margin-bottom: 0;
 }
 
+.info-heading {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.info-close {
+  font-size: 0.8em;
+}
+
 .list-apis {
   font-size: 0.9em;
 }
