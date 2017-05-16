@@ -29,14 +29,14 @@
 
         <aside class="col-sm-3 col-aside">
           <!-- Search -->
-          <div class="input-group" data-bind="with: search">
+          <div class="input-group" data-bind="with: search, visible: search.visible">
             <span class="input-group-btn">
               <button type="button" class="btn btn-success search-btn">
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
               </button>
             </span>
             <input type="text" class="form-control search-in" placeholder="Filtrar resultados"
-              data-bind="textInput: text, event: {keyup: $root.markerList.filter}, enable: enable">
+              data-bind="textInput: text, event: {keyup: $root.markerList.filter}">
           </div>
 
           <div class="overflow">

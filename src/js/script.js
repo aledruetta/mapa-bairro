@@ -38,7 +38,7 @@ function app() {
     ///// Campo de busca /////
     view.search = {
       text: ko.observable(''),
-      enable: ko.observable(true),
+      visible: ko.observable(true),
 
       reset: function() {
         this.text('');
@@ -133,7 +133,7 @@ function app() {
       // Fechar Painel
       close: function() {
         view.search.reset();
-        view.search.enable(true);
+        view.search.visible(true);
         infowindow.close();
         this.title('');
         this.photo('');
@@ -147,7 +147,7 @@ function app() {
       // Abrir Painel
       open: function(target) {
         var location = target.getPosition();
-        view.search.enable(false);
+        view.search.visible(false);
         this.title(target.title);
 
         // Obter lista de Places e foto
@@ -219,7 +219,8 @@ function app() {
           var matchs = ['bar', 'restaurant', 'food', 'lodging'];
           var googleplaces = filterPlaces(matchs, results);
 
-          googleplaces.forEach(function(place) {
+          for (var i = 0; i < googleplaces.length; i++) {
+            var place = googleplaces[i];
             var name = capitalize(place.name);
             var position = place.geometry.location;
             var url = getUrlPhoto(place.photos);
@@ -234,8 +235,12 @@ function app() {
               });
 
               items.push({marker: marker, url: url, rating: rating});
+              
+              if (items.length >= 10) {
+                break;
+              }
             }
-          });
+          }
 
           sortItems(items);
           resolve(items);
