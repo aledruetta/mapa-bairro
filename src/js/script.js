@@ -80,7 +80,7 @@ function app() {
       click: function() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
-        panToMarker(this, 15);
+        // panToMarker(this, 17);
         showInfoWindow(this);
         view.infoPanel.open(this);
         view.search.reset();
@@ -93,7 +93,6 @@ function app() {
 
       // Apresentar informação sobre o Place
       click: function(item) {
-        panToMarker(item.marker, 18);
         showInfoWindow(item.marker);
         getAddress(item.marker.getPosition())
           .then(function(response) {
@@ -152,10 +151,10 @@ function app() {
         this.title(target.title);
 
         // Obter lista de Places e foto
-        getNearBy(location).then(function(response) {
+        getNearBy(target).then(function(response) {
           view.places.items(response);
-          var url = selectPhoto(view.places.items());
-          // view.infoPanel.photo(url);
+          panToBounds(target);
+
         }, function(error) {
           alert(error);
         });
@@ -207,9 +206,9 @@ function app() {
   }
 
   // Obter lista de Places via NearbySearch service
-  function getNearBy(location) {
+  function getNearBy(item) {
     var request = {
-      location: location,
+      location: item.getPosition(),
       radius: '500',
     };
 
@@ -226,7 +225,7 @@ function app() {
             var url = getUrlPhoto(place.photos);
             var rating = place.rating;
 
-            if (url && position && position !== location) {
+            if (url && position && position !== item.getPosition()) {
               var marker = createMarker({
                 title: name,
                 position: place.geometry.location,
@@ -403,6 +402,19 @@ function app() {
   function panToMarker(marker, zoom) {
     map.panTo(marker.position);
     map.setZoom(zoom);
+    window.setTimeout(function() {
+      marker.setAnimation(null);
+    }, 3000);
+  }
+
+  function panToBounds(marker) {
+    var bounds = new google.maps.LatLngBounds();
+    bounds.extend(marker.getPosition());
+    view.places.items().forEach(function(item) {
+      bounds.extend(item.marker.getPosition());
+    });
+    map.fitBounds(bounds);
+
     window.setTimeout(function() {
       marker.setAnimation(null);
     }, 3000);
