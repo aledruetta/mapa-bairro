@@ -19,14 +19,15 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse" aria-expanded="false">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
+        <a class="navbar-brand" href="#">Mapa do Bairro</a>
       </div>
     </nav>
 
@@ -80,7 +81,7 @@
               </li>
               <!-- Places -->
               <li class="list-group-item places">
-                <h3 class="api-title">Google Places</h3>
+                <h3 class="api-title">Google Places <span class="api-title-span">Clique para ver</span></h3>
                 <ul class="list-places" data-bind="foreach: places.items">
                   <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
                 </ul>
