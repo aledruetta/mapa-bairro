@@ -32,7 +32,6 @@ body {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
-  font-size: 0.9em;
 }
 
 .marker-list {
@@ -53,6 +52,10 @@ body {
   border-radius: 0;
   border-top: 0;
   margin-bottom: 0;
+}
+
+.list-apis {
+  font-size: 0.9em;
 }
 
 .api-title {
