@@ -6,13 +6,21 @@
   "author": "Alejandro Druetta <aledruetta@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs && cp node_modules/q/q.js src/libs"
+    "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs && cp node_modules/q/q.js src/libs",
+    "css": "csslint --ignore=order-alphabetical,box-model src/css/**.css",
+    "js": "jshint --reporter=node_modules/jshint-stylish src/js/**.js",
+    "minify": "uglifyjs src/js/**.js --outpu dist/js"
   },
   "dependencies": {},
   "devDependencies": {
     "bootstrap": "^3.3.7",
+    "csslint": "^1.0.5",
+    "csslint-stylish": "^0.0.6",
+    "html-minifier": "^3.5.0",
     "jquery": "^3.2.1",
+    "jshint": "^2.9.4",
+    "jshint-stylish": "^2.2.1",
     "knockout": "^3.4.2",
-    "q": "^1.5.0"
+    "uglify-js": "^3.0.7"
   }
 }
