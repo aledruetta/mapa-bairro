@@ -6,8 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mapa do Bairro</title>
 
-    <!-- Bootstrap -->
+    <!-- build:remove -->
     <link rel="stylesheet" href="libs/bs/css/bootstrap.min.css">
+    <!-- /build -->
+
+    <!-- build:include css-cdn.html -->
+    <!-- /build -->
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -15,7 +19,10 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.2/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+    <!-- build:css inline -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- /build -->
   </head>
 
   <body>
@@ -95,12 +102,19 @@
       </div>
     </div>
 
-
+    <!-- build:remove -->
     <script src="libs/knockout-latest.js"></script>
     <script src="libs/jquery.min.js"></script>
     <script src="libs/bs/js/bootstrap.min.js"></script>
-    <script src="libs/q.js"></script>
+    <!-- /build -->
+
+    <!-- build:include js-cdn.html -->
+    <!-- /build -->
+
+    <!-- build:js inline -->
     <script src="js/script.js"></script>
+    <!-- /build -->
+
     <script src="https://maps.googleapis.com/maps/api/js?v=3&language=pt&region=BR&libraries=places&key=AIzaSyC0Qliqe7HjHeD2daBzwVtk6ndT3kJLVlc&callback=app"
     async defer></script>
   </body>

@@ -9,7 +9,10 @@
     "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs && cp node_modules/q/q.js src/libs",
     "css": "csslint --ignore=order-alphabetical,box-model src/css/**.css",
     "js": "jshint --reporter=node_modules/jshint-stylish src/js/**.js",
-    "minify": "mkdir -p dist/js dist/css && uglifyjs src/js/*.js --output dist/js/script.js && html-minifier -c html-minifier.conf src/index.html -o dist/index.html && cleancss -o dist/css/style.css src/css/style.css"
+    "lint": "yarn run css && yarn run js",
+    "process": "mkdir -p dist && htmlprocessor src/index.html -o dist/index.process.html",
+    "minify": "mkdir -p dist && html-minifier -c html-minifier.conf dist/index.process.html -o dist/index.html && rm dist/index.process.html",
+    "html": "yarn run process && yarn run minify"
   },
   "dependencies": {},
   "devDependencies": {
@@ -19,6 +22,7 @@
     "csslint": "^1.0.5",
     "csslint-stylish": "^0.0.6",
     "html-minifier": "^3.5.0",
+    "htmlprocessor": "^0.2.4",
     "jquery": "^3.2.1",
     "jshint": "^2.9.4",
     "jshint-stylish": "^2.2.1",
