@@ -61,8 +61,8 @@ body {
     height: calc(100vh - 91px);
   }
 
-  .collapse {
-    display: block;
+  .navbar-collapse {
+    width: 25%;
   }
 }
 
