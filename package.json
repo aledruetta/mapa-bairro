@@ -9,11 +9,12 @@
     "libs": "mkdir -p src/libs/bs && cp -R node_modules/bootstrap/dist/* src/libs/bs && cp node_modules/jquery/dist/jquery.min.js src/libs && cp node_modules/knockout/build/output/knockout-latest.js src/libs && cp node_modules/q/q.js src/libs",
     "css": "csslint --ignore=order-alphabetical,box-model src/css/**.css",
     "js": "jshint --reporter=node_modules/jshint-stylish src/js/**.js",
-    "minify": "uglifyjs src/js/**.js --outpu dist/js"
+    "minify": "mkdir -p dist/js && uglifyjs src/js/*.js --output dist/js/script.js && html-minifier -c html-minifier.conf src/index.html -o dist/index.html"
   },
   "dependencies": {},
   "devDependencies": {
     "bootstrap": "^3.3.7",
+    "clean-css": "^4.1.2",
     "csslint": "^1.0.5",
     "csslint-stylish": "^0.0.6",
     "html-minifier": "^3.5.0",
