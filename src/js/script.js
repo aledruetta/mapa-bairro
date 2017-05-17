@@ -84,6 +84,7 @@ function app() {
         showInfoWindow(this);
         view.infoPanel.open(this);
         view.search.reset();
+        collapseNavBar();
       },
     };
 
@@ -104,6 +105,7 @@ function app() {
         view.infoPanel.wiki(false);
         view.infoPanel.photo(item.url);
         view.infoPanel.title(item.marker.title);
+        collapseNavBar();
       },
 
       reset: function() {
@@ -458,6 +460,13 @@ function app() {
     bounds.extend(marker.position);
 
     return marker;
+  }
+
+  function collapseNavBar() {
+    var $navbar = $('.col-aside');
+    if ($navbar.hasClass('in')) {
+      $navbar.removeClass('in');
+    }
   }
 
   // Inicializar mapa com marcadores iniciais, bounds e polígono
