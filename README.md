@@ -25,11 +25,12 @@
   ```bash
   $ cd mapa-bairro
   $ yarn install
-  $ yarn run dist
+  $ yarn run libs
   ```
 
 * Executar
 
   ```bash
+  $ yarn run dist
   $ firefox dist/index.html &
   ```
