@@ -12,7 +12,7 @@
     "lint": "yarn run css && yarn run js",
     "process": "mkdir -p dist && htmlprocessor src/index.html -o dist/index.process.html",
     "minify": "mkdir -p dist && html-minifier -c html-minifier.conf dist/index.process.html -o dist/index.html && rm dist/index.process.html",
-    "html": "yarn run process && yarn run minify"
+    "dist": "yarn run process && yarn run minify"
   },
   "dependencies": {},
   "devDependencies": {
