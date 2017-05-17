@@ -60,6 +60,10 @@ body {
   .marker-list {
     height: calc(100vh - 91px);
   }
+
+  .collapse {
+    display: block;
+  }
 }
 
 .info-heading {
