@@ -26,7 +26,7 @@ function app() {
   var icons = {
     RED: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
     BLUE: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-    YELLOW: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+    GREEN: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
   };
 
   ////////////////////////////////
@@ -231,11 +231,11 @@ function app() {
                 title: name,
                 position: place.geometry.location,
                 animation: google.maps.Animation.DROP,
-                icon: icons.YELLOW
+                icon: icons.GREEN
               });
 
               items.push({marker: marker, url: url, rating: rating});
-              
+
               if (items.length >= 10) {
                 break;
               }
