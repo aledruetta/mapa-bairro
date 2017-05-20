@@ -322,7 +322,7 @@ function app() {
           if (results[1]) {
             resolve(results[0].formatted_address);
           }
-        } else if (staus === google.maps.GeocoderStatus.ZERO_RESULTS) {
+        } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
           reject(Error('Geocoder status: ' + status));
         }
       });
@@ -449,7 +449,6 @@ function app() {
 
     map.setZoom(18);
     map.fitBounds(bounds);
-    // getPolygon();
   }
 
   var view = new MapViewModel();
