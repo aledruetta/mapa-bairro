@@ -456,3 +456,13 @@ function app() {
 
   initMap();
 }
+
+function googleApiError() {
+  'use strict';
+
+  $('.shadow-container').addClass('in');
+  $('.search').hide();
+  $('.overflow').hide();
+  $('.btn-hamburguer').prop('disabled', true);
+  $('.shadow-message-details').text('Google Maps não está disponível nesse momento.');
+}

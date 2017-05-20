@@ -26,9 +26,21 @@
   </head>
 
   <body>
+    <div class="shadow-container collapse">
+      <div class="shadow"></div>
+      <div class="shadow-message-panel">
+        <div class="shadow-message-container">
+          <p class="shadow-message">
+            Ops... Houston, we have a problem...
+          </p>
+          <p class="shadow-message-details"></p>
+        </div>
+      </div>
+    </div>
+
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+        <button type="button" class="navbar-toggle collapsed btn-hamburguer" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
           <span class="sr-only">Toggle navigation</span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
@@ -43,7 +55,7 @@
 
         <aside class="col-sm-3 navbar-collapse collapse col-aside" id="collapse">
           <!-- Search -->
-          <div class="input-group" data-bind="with: search, visible: search.visible">
+          <div class="input-group search" data-bind="with: search, visible: search.visible">
             <span class="input-group-btn">
               <button type="button" class="btn btn-success search-btn">
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -115,7 +127,7 @@
     <script src="js/script.js"></script>
     <!-- /build -->
 
-    <script src="https://maps.googleapis.com/maps/api/js?v=3&language=pt&region=BR&libraries=places&key=AIzaSyC0Qliqe7HjHeD2daBzwVtk6ndT3kJLVlc&callback=app"
+    <script src="https://maps.googleapisx.com/maps/api/js?v=3&language=pt&region=BR&libraries=places&key=AIzaSyC0Qliqe7HjHeD2daBzwVtk6ndT3kJLVlc&callback=app" onerror="googleApiError()"
     async defer></script>
   </body>
 </html>
