@@ -1,5 +1,5 @@
 function app() {
-  "use strict";
+  'use strict';
 
   // objetos Google Maps API
   var map = new google.maps.Map(document.getElementById('map'));
@@ -80,7 +80,6 @@ function app() {
       click: function() {
         this.setZIndex(google.maps.Marker.MAX_ZINDEX);
         this.setAnimation(google.maps.Animation.BOUNCE);
-        // panToMarker(this, 17);
         showInfoWindow(this);
         view.infoPanel.open(this);
         view.search.reset();
@@ -283,7 +282,6 @@ function app() {
                 break;
               }
             }
-            // resolve(response.photos.photo[0].url_m);
           } else {
             reject(Error('Flickr error'));
           }
@@ -313,34 +311,6 @@ function app() {
           }
         },
       });
-    });
-  }
-
-  // Obter polígono
-  function getPolygon() {
-    // Carrega dados de polígono exportados do Open Street Map
-    $.getJSON('/src/json/ubatuba_poly.txt', function(geoJsonTxt) {
-      // Cria objeto FeatureCollection com formatação de estilo
-      var geojson = {
-        "type": "FeatureCollection",
-        "features": [{
-          "type": "Feature",
-          "geometry": {},
-          "properties": {
-            fillColor: "purple",
-            fillOpacity: 0.05,
-            strokeColor: "purple",
-            strokeOpacity: 0.2,
-            strokeWeight: 1
-          }
-        }],
-      };
-      // Adiciona os dados importados pro FeatureCollection
-      geojson.features[0].geometry = geoJsonTxt;
-      // Desenha o polígono no mapa
-      map.data.addGeoJson(geojson);
-      // Aplica estilo
-      setStyleMap();
     });
   }
 
