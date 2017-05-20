@@ -14,7 +14,9 @@
     "minify": "mkdir -p dist && html-minifier -c html-minifier.conf dist/index.process.html -o dist/index.html && rm dist/index.process.html",
     "dist": "yarn run process && yarn run minify"
   },
-  "dependencies": {},
+  "dependencies": {
+    "w3cjs": "^0.3.0"
+  },
   "devDependencies": {
     "bootstrap": "^3.3.7",
     "csslint": "^1.0.5",
