@@ -459,5 +459,8 @@ function app() {
 
 function googleApiError() {
   $('.app-view').hide();
-  alert('Google Maps não está disponível nesse momento.');
+  $('.error-img').show();
+  setTimeout(function() {
+    alert('Google Maps não está disponível nesse momento.');
+  }, 100);
 }
