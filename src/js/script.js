@@ -247,7 +247,7 @@ function app() {
           resolve(items);
 
         } else {
-          reject(Error('NearbySearch service error: ' + status));
+          reject(Error('a API do Google Places não está disponível nesse momento'));
         }
       });
     });
