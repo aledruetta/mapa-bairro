@@ -459,7 +459,7 @@ function app() {
 
 function googleApiError() {
   'use strict';
-  
+
   $('.app-view').hide();
   $('.error-img').show();
   setTimeout(function() {
