@@ -14,11 +14,9 @@
     "lint": "yarn run css && yarn run js && yarn run w3c-src",
     "process": "mkdir -p dist && htmlprocessor src/index.html -o dist/index.process.html",
     "minify": "mkdir -p dist && html-minifier -c html-minifier.conf dist/index.process.html -o dist/index.html && rm dist/index.process.html",
-    "dist": "yarn run process && yarn run minify && yarn run w3c-dist"
+    "dist": "mkdir -p dist/img && cp src/img/map-marker-small.svg dist/img && yarn run process && yarn run minify && yarn run w3c-dist"
   },
-  "dependencies": {
-    "w3cjs": "^0.3.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "bootstrap": "^3.3.7",
     "csslint": "^1.0.5",
@@ -28,6 +26,7 @@
     "jquery": "^3.2.1",
     "jshint": "^2.9.4",
     "jshint-stylish": "^2.2.1",
-    "knockout": "^3.4.2"
+    "knockout": "^3.4.2",
+    "w3cjs": "^0.3.0"
   }
 }
