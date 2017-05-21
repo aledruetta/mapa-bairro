@@ -273,19 +273,20 @@ function app() {
       $.ajax({
         url: url,
         dataType: 'json',
-        success: function(response) {
-          if (response) {
-            for (var i = 0; i < response.photos.photo.length; i++) {
-              var item = response.photos.photo[i];
-              if (Number(item.height_m) < Number(item.width_m)) {
-                resolve(item.url_m);
-                break;
-              }
+      })
+      .done(function(response) {
+        if (response) {
+          for (var i = 0; i < response.photos.photo.length; i++) {
+            var item = response.photos.photo[i];
+            if (Number(item.height_m) < Number(item.width_m)) {
+              resolve(item.url_m);
+              break;
             }
-          } else {
-            reject(Error('Flickr error'));
           }
         }
+      })
+      .fail(function() {
+        reject(Error('a API do Flickr não está disponível nesse momento!'));
       });
     });
   }
