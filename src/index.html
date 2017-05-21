@@ -97,7 +97,7 @@
                 <p data-bind="text: wiki"></p>
               </li>
               <!-- Places -->
-              <li class="list-group-item places" data-bind="visible: places.items.length > 0">
+              <li class="list-group-item places" data-bind="visible: places.items().length > 0">
                 <h3 class="api-title">Google Places <span class="api-title-span">Clique para ver</span></h3>
                 <ul class="list-places" data-bind="foreach: places.items">
                   <li class="list-places-item" data-bind="text: marker.title, click: $parent.places.click"></li>
