@@ -304,13 +304,16 @@ function app() {
       $.ajax({
         url: url,
         dataType: 'jsonp',
-        success: function(response) {
-          if (response) {
-            resolve(response[2][0]);
-          } else {
-            reject(Error('Wikipedia error'));
-          }
-        },
+      })
+      .done(function(response) {
+        if (response) {
+          resolve(response[2][0]);
+        } else {
+          reject(Error('Wikipedia error'));
+        }
+      })
+      .fail(function() {
+        reject(Error('a API da Wikipédia não está disponível nesse momento!'));
       });
     });
   }
