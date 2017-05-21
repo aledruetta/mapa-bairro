@@ -456,3 +456,8 @@ function app() {
 
   initMap();
 }
+
+function googleApiError() {
+  $('.app-view').hide();
+  alert('Google Maps não está disponível nesse momento.');
+}
