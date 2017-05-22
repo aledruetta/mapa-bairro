@@ -437,6 +437,7 @@ function app() {
 
     marker.addListener('click', function() {
         panToMarker(this, 15);
+        view.infoPanel.flickr(this.photo.match('flickr'));
         view.infoPanel.photo(this.photo);
         view.infoPanel.address(this.address);
         view.infoPanel.wiki(this.wiki);
