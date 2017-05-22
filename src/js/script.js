@@ -51,7 +51,7 @@ function app() {
       items: ko.observableArray([]),
       visible: ko.observable(true),
 
-      // Oculta todos
+      // Visualiza (true) ou oculta todos (false)
       showAll: function(bool) {
         this.items().forEach(function(item) {
           item.setVisible(bool);
@@ -81,12 +81,10 @@ function app() {
         animate(this);
         collapseNavBar();
         view.search.reset();
+        view.places.reset();
         view.getPlaces(this);
-        view.infoPanel.photo(this.photo);
-        view.infoPanel.flickr(true);
-        view.infoPanel.address(this.address);
-        view.infoPanel.wiki(this.wiki);
-        view.infoPanel.open(this.title);
+        view.infoPanel.update(this);
+        view.infoPanel.open();
         showInfoWindow(this);
       },
     };
@@ -97,11 +95,9 @@ function app() {
 
       // Apresentar informação sobre o Place
       click: function(place) {
+        animate(place.marker);
         collapseNavBar();
-        view.infoPanel.title(place.marker.title);
-        view.infoPanel.flickr(false);
-        view.infoPanel.photo(place.marker.photo);
-        view.infoPanel.address(place.marker.address);
+        view.infoPanel.update(place.marker);
         showInfoWindow(place.marker);
       },
 
@@ -115,6 +111,7 @@ function app() {
 
     ///// Painel contextual /////
     view.infoPanel = {
+
       title: ko.observable(''),
       photo: ko.observable(''),
       flickr: ko.observable(false),
@@ -122,6 +119,23 @@ function app() {
       address: ko.observable(''),
       places: view.places,
       visible: ko.observable(false),
+
+      reset: function() {
+        this.title('');
+        this.photo('');
+        this.flickr(false);
+        this.wiki('');
+        this.address('');
+      },
+
+      update: function(marker) {
+        this.reset();
+        this.title(marker.title);
+        this.flickr(marker.photo.match('flickr'));
+        this.photo(marker.photo);
+        this.address(marker.address);
+        this.wiki(marker.wiki);
+      },
 
       // Alterna visualização entre a Lista e o Painel
       toggle: function() {
@@ -134,21 +148,17 @@ function app() {
         view.search.reset();
         view.search.visible(true);
         infowindow.close();
-        this.title('');
-        this.photo('');
-        this.wiki('');
-        this.address('');
+        this.reset();
         this.places.reset();
         this.toggle();
         map.fitBounds(bounds);
       },
 
       // Abrir Painel
-      open: function(title) {
+      open: function() {
         view.search.visible(false);
         view.markerList.visible(false);
         this.visible(true);
-        this.title(title);
       },
     };
 
@@ -162,10 +172,10 @@ function app() {
       });
     };
 
+    // Muda color dos marcadores on hover
     view.mouseOverIcon = function(marker) {
       marker.setIcon(icons.BLUE);
     };
-
     view.mouseOutIcon = function(marker) {
       marker.setIcon(icons.RED);
     };
@@ -235,6 +245,7 @@ function app() {
     });
   }
 
+  // Obter url do Flickr a partir do título do marcador
   function getFlickr(title) {
     var endpoint = 'https://api.flickr.com/services/rest/?';
     var query = 'method=%method%&api_key=%api_key%&text=%text%&license=%license%' +
@@ -273,6 +284,7 @@ function app() {
     });
   }
 
+  // Obter resumo da Wikipédia a partir do título do marcador
   function getWiki(title) {
     var endpoint = 'https://es.wikipedia.org/w/api.php?';
     var query = 'format=%format%&action=%action%&search=%search%&limit=%limit%&callback=?';
@@ -367,6 +379,7 @@ function app() {
     map.setZoom(zoom);
   }
 
+  // Ajustar as bordas do mapa para conter item e neraby places
   function panToBounds(marker) {
     var bounds = new google.maps.LatLngBounds();
     bounds.extend(marker.getPosition());
@@ -437,11 +450,8 @@ function app() {
     marker.setVisible(true);
 
     marker.addListener('click', function() {
-        view.infoPanel.flickr(this.photo.match('flickr'));
-        view.infoPanel.photo(this.photo);
-        view.infoPanel.address(this.address);
-        view.infoPanel.wiki(this.wiki);
-        view.infoPanel.open(this.title);
+        view.infoPanel.update(this);
+        view.infoPanel.open();
         panToMarker(this, 15);
         showInfoWindow(this);
         animate(this);
@@ -488,6 +498,7 @@ function app() {
   initMap();
 }
 
+// Tratamento de erro da API Google Maps
 function googleApiError() {
   'use strict';
 
