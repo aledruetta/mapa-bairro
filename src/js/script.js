@@ -321,7 +321,17 @@ function app() {
             resolve(results[0].formatted_address);
           }
         } else {
-          reject(Error('Geocoder status: ' + status));
+          if (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+            setTimeout(function() {
+              getAddress(location).then(function(response) {
+                resolve(response);
+              }, function(error) {
+                reject(error);
+              });
+            }, 2000);
+          } else {
+            reject(Error('Geocoder status: ' + status));
+          }
         }
       });
     });
