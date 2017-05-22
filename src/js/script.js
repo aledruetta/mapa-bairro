@@ -78,12 +78,16 @@ function app() {
 
       // Apresenta item selecionado na lista
       click: function() {
-        this.setZIndex(google.maps.Marker.MAX_ZINDEX);
-        this.setAnimation(google.maps.Animation.BOUNCE);
-        showInfoWindow(this);
-        view.infoPanel.open(this);
-        view.search.reset();
+        animate(this);
         collapseNavBar();
+        view.search.reset();
+        view.getPlaces(this);
+        view.infoPanel.photo(this.photo);
+        view.infoPanel.flickr(true);
+        view.infoPanel.address(this.address);
+        view.infoPanel.wiki(this.wiki);
+        view.infoPanel.open(this.title);
+        showInfoWindow(this);
       },
     };
 
@@ -92,19 +96,13 @@ function app() {
       items: ko.observableArray([]),
 
       // Apresentar informação sobre o Place
-      click: function(item) {
-        showInfoWindow(item.marker);
-        getAddress(item.marker.getPosition())
-          .then(function(response) {
-            view.infoPanel.address(response);
-          }, function(error) {
-            alert(error);
-          });
-        view.infoPanel.flickr(false);
-        view.infoPanel.wiki(false);
-        view.infoPanel.photo(item.url);
-        view.infoPanel.title(item.marker.title);
+      click: function(place) {
         collapseNavBar();
+        view.infoPanel.title(place.marker.title);
+        view.infoPanel.flickr(false);
+        view.infoPanel.photo(place.marker.photo);
+        view.infoPanel.address(place.marker.address);
+        showInfoWindow(place.marker);
       },
 
       reset: function() {
@@ -146,43 +144,22 @@ function app() {
       },
 
       // Abrir Painel
-      open: function(target) {
-        var location = target.getPosition();
+      open: function(title) {
         view.search.visible(false);
-        this.title(target.title);
-
-        // Obter lista de Places e foto
-        getNearBy(target).then(function(response) {
-          view.places.items(response);
-          panToBounds(target);
-
-        }, function(error) {
-          alert(error);
-        });
-
-        getFlickr(target.title).then(function(response) {
-          view.infoPanel.photo(response);
-          view.infoPanel.flickr(true);
-        }, function(error) {
-          alert(error);
-        });
-
-        // Obter informação da Wikipedia
-        getWiki(target.title).then(function(response) {
-          view.infoPanel.wiki(response);
-        }, function(error) {
-          alert(error);
-        });
-
-        // Obter endereço
-        getAddress(location).then(function(response) {
-          view.infoPanel.address(response);
-        }, function(error) {
-          alert(error);
-        });
-
-        this.toggle();
+        view.markerList.visible(false);
+        this.visible(true);
+        this.title(title);
       },
+    };
+
+    // Obter lista de Places e foto do marcador
+    view.getPlaces = function(marker) {
+      getNearBy(marker).then(function(response) {
+        view.places.items(response);
+        panToBounds(marker);
+      }, function(error) {
+        alert(error);
+      });
     };
 
     view.mouseOverIcon = function(marker) {
@@ -209,7 +186,7 @@ function app() {
   // Obter lista de Places via NearbySearch service
   function getNearBy(item) {
     var request = {
-      location: item.getPosition(),
+      location: item.position,
       radius: '500',
     };
 
@@ -234,8 +211,12 @@ function app() {
                 animation: google.maps.Animation.DROP,
                 icon: icons.GREEN
               });
+              marker.photo = url;
 
-              items.push({marker: marker, url: url, rating: rating});
+              items.push({
+                marker: marker,
+                rating: rating
+              });
 
               if (items.length >= 10) {
                 break;
@@ -326,7 +307,7 @@ function app() {
           if (results[1]) {
             resolve(results[0].formatted_address);
           }
-        } else if (status === google.maps.GeocoderStatus.ZERO_RESULTS) {
+        } else {
           reject(Error('Geocoder status: ' + status));
         }
       });
@@ -383,9 +364,6 @@ function app() {
   function panToMarker(marker, zoom) {
     map.panTo(marker.position);
     map.setZoom(zoom);
-    window.setTimeout(function() {
-      marker.setAnimation(null);
-    }, 3000);
   }
 
   function panToBounds(marker) {
@@ -395,10 +373,6 @@ function app() {
       bounds.extend(item.marker.getPosition());
     });
     map.fitBounds(bounds);
-
-    window.setTimeout(function() {
-      marker.setAnimation(null);
-    }, 3000);
   }
 
   // Aplicar estilo do polígono
@@ -420,6 +394,38 @@ function app() {
     var proto = Object.getPrototypeOf(marker);
 
     proto.filtered = ko.observable(true);
+    proto.photo = '';
+    proto.address = '';
+    proto.wiki = '';
+    // Obter informação da Wikipedia
+    proto.getWiki = function() {
+      var self = this;
+      getWiki(this.title).then(function(response) {
+        self.wiki = response;
+      }, function(error) {
+        alert(error);
+      });
+    };
+    // Obter endereço do Geocoding
+    proto.getAddress = function() {
+      var self = this;
+      getAddress(this.position).then(function(response) {
+        self.address = response;
+      }, function(error) {
+        alert(error);
+      });
+    };
+    // Obter foto do Flickr ou Places
+    proto.getPhoto = function(origin) {
+      var self = this;
+      if (origin === 'flickr') {
+        getFlickr(this.title).then(function(response) {
+          self.photo = response;
+        }, function(error) {
+          alert(error);
+        });
+      }
+    };
     proto.oldSetVisible = proto.setVisible;
     proto.setVisible = function(bool) {
       this.oldSetVisible(bool);
@@ -428,12 +434,28 @@ function app() {
 
     marker.setMap(map);
     marker.setVisible(true);
+
     marker.addListener('click', function() {
-      showInfoWindow(marker);
+        panToMarker(this, 15);
+        view.infoPanel.photo(this.photo);
+        view.infoPanel.address(this.address);
+        view.infoPanel.wiki(this.wiki);
+        view.infoPanel.open(this.title);
+        showInfoWindow(this);
+        animate(this);
     });
+
     bounds.extend(marker.position);
 
     return marker;
+  }
+
+  function animate(marker) {
+    marker.zIndex = google.maps.Marker.MAX_ZINDEX;
+    marker.animation = google.maps.Animation.BOUNCE;
+    setTimeout(function() {
+      marker.setAnimation(null);
+    }, 2000);
   }
 
   function collapseNavBar() {
@@ -447,6 +469,9 @@ function app() {
   function initMap() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
+      marker.getWiki();
+      marker.getAddress();
+      marker.getPhoto('flickr');
       marker.setIcon(icons.RED);
       view.markerList.items.push(marker);
     });
