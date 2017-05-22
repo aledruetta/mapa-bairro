@@ -77,15 +77,15 @@ function app() {
       },
 
       // Apresenta item selecionado na lista
-      click: function() {
-        animate(this);
+      click: function(marker) {
+        showInfoWindow(marker);
+        animate(marker);
         collapseNavBar();
         view.search.reset();
         view.places.reset();
-        this.getPlaces();
-        view.infoPanel.update(this);
+        marker.getPlaces();
+        view.infoPanel.update(marker);
         view.infoPanel.open();
-        showInfoWindow(this);
       },
     };
 
@@ -94,11 +94,17 @@ function app() {
       items: ko.observableArray([]),
 
       // Apresentar informação sobre o Place
-      click: function(place) {
-        animate(place.marker);
+      click: function(item) {
+        var marker = null;
+        if (item.hasOwnProperty('marker')) {
+          marker = item.marker;
+        } else {
+          marker = item;
+        }
+        showInfoWindow(marker);
+        animate(marker);
         collapseNavBar();
-        view.infoPanel.update(place.marker);
-        showInfoWindow(place.marker);
+        view.infoPanel.update(marker);
       },
 
       reset: function() {
@@ -214,6 +220,7 @@ function app() {
                 animation: google.maps.Animation.DROP,
                 icon: icons.GREEN
               });
+              marker.type = 'placeItem';
               marker.photo = url;
               marker.getAddress();
 
@@ -382,17 +389,6 @@ function app() {
     map.fitBounds(bounds);
   }
 
-  // Aplicar estilo do polígono
-  function setStyleMap() {
-    map.data.setStyle(function(feature) {
-      var style = {};
-      feature.forEachProperty(function(value, property) {
-        style[property] = value;
-      });
-      return style;
-    });
-  }
-
 
   // ===== Crear marcador =====
   function createMarker(properties) {
@@ -406,6 +402,7 @@ function app() {
     proto.address = '';
     proto.wiki = '';
     proto.places = [];
+    proto.type = '';
 
     // Obter informação da Wikipedia
     proto.getWiki = function() {
@@ -442,7 +439,7 @@ function app() {
     // Obter nearby places
     proto.getPlaces = function() {
       var self = this;
-      if (self.places.length === 0) {
+      if (self.type === 'listItem' && self.places.length === 0) {
         getNearBy(self).then(function(response) {
           self.places = response;
           view.places.items(self.places);
@@ -470,11 +467,11 @@ function app() {
     marker.setVisible(true);
 
     marker.addListener('click', function() {
-        view.infoPanel.update(this);
-        view.infoPanel.open();
-        panToMarker(this, 15);
-        showInfoWindow(this);
-        animate(this);
+      if (this.type === 'placeItem') {
+        view.places.click(this);
+      } else if (this.type === 'listItem') {
+        view.markerList.click(this);
+      }
     });
 
     bounds.extend(marker.position);
@@ -501,6 +498,7 @@ function app() {
   function initMap() {
     locations.forEach(function(location) {
       var marker = createMarker(location);
+      marker.type = 'listItem';
       marker.getWiki();
       marker.getAddress();
       marker.getPhoto('flickr');
