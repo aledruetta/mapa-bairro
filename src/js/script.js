@@ -82,7 +82,7 @@ function app() {
         collapseNavBar();
         view.search.reset();
         view.places.reset();
-        view.getPlaces(this);
+        this.getPlaces();
         view.infoPanel.update(this);
         view.infoPanel.open();
         showInfoWindow(this);
@@ -103,7 +103,7 @@ function app() {
 
       reset: function() {
         this.items().forEach(function(place) {
-          place.marker.setMap(null);
+          place.marker.setVisible(false);
         });
         this.items([]);
       },
@@ -160,16 +160,6 @@ function app() {
         view.markerList.visible(false);
         this.visible(true);
       },
-    };
-
-    // Obter lista de Places e foto do marcador
-    view.getPlaces = function(marker) {
-      getNearBy(marker).then(function(response) {
-        view.places.items(response);
-        panToBounds(marker);
-      }, function(error) {
-        alert(error);
-      });
     };
 
     // Muda color dos marcadores on hover
@@ -386,7 +376,7 @@ function app() {
   function panToBounds(marker) {
     var bounds = new google.maps.LatLngBounds();
     bounds.extend(marker.getPosition());
-    view.places.items().forEach(function(item) {
+    marker.places.forEach(function(item) {
       bounds.extend(item.marker.getPosition());
     });
     map.fitBounds(bounds);
@@ -415,6 +405,7 @@ function app() {
     proto.photo = '';
     proto.address = '';
     proto.wiki = '';
+    proto.places = [];
 
     // Obter informação da Wikipedia
     proto.getWiki = function() {
@@ -445,6 +436,26 @@ function app() {
         }, function(error) {
           alert(error);
         });
+      }
+    };
+
+    // Obter nearby places
+    proto.getPlaces = function() {
+      var self = this;
+      if (self.places.length === 0) {
+        getNearBy(self).then(function(response) {
+          self.places = response;
+          view.places.items(self.places);
+          panToBounds(self);
+        }, function(error) {
+          alert(error);
+        });
+      } else {
+        view.places.items(self.places);
+        view.places.items().forEach(function(item) {
+          item.marker.setVisible(true);
+        });
+        panToBounds(self);
       }
     };
 
