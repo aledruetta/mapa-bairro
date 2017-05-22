@@ -212,6 +212,7 @@ function app() {
                 icon: icons.GREEN
               });
               marker.photo = url;
+              marker.getAddress();
 
               items.push({
                 marker: marker,
@@ -436,12 +437,12 @@ function app() {
     marker.setVisible(true);
 
     marker.addListener('click', function() {
-        panToMarker(this, 15);
         view.infoPanel.flickr(this.photo.match('flickr'));
         view.infoPanel.photo(this.photo);
         view.infoPanel.address(this.address);
         view.infoPanel.wiki(this.wiki);
         view.infoPanel.open(this.title);
+        panToMarker(this, 15);
         showInfoWindow(this);
         animate(this);
     });
@@ -452,11 +453,11 @@ function app() {
   }
 
   function animate(marker) {
-    marker.zIndex = google.maps.Marker.MAX_ZINDEX;
-    marker.animation = google.maps.Animation.BOUNCE;
+    marker.setZIndex(google.maps.Marker.MAX_ZINDEX);
+    marker.setAnimation(google.maps.Animation.BOUNCE);
     setTimeout(function() {
       marker.setAnimation(null);
-    }, 2000);
+    }, 3000);
   }
 
   function collapseNavBar() {
