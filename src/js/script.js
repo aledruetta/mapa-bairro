@@ -35,7 +35,7 @@ function app() {
   function MapViewModel() {
     var view = this;
 
-    ///// Campo de busca /////
+    // ===== Campo de busca =====
     view.search = {
       text: ko.observable(''),
       visible: ko.observable(true),
@@ -46,7 +46,7 @@ function app() {
       },
     };
 
-    ///// Lista lateral /////
+    // ===== Lista lateral =====
     view.markerList = {
       items: ko.observableArray([]),
       visible: ko.observable(true),
@@ -89,7 +89,7 @@ function app() {
       },
     };
 
-    ///// Seção Places do Painel /////
+    // ===== Seção Places do Painel =====
     view.places = {
       items: ko.observableArray([]),
 
@@ -109,7 +109,7 @@ function app() {
       },
     };
 
-    ///// Painel contextual /////
+    // ===== Painel contextual =====
     view.infoPanel = {
 
       title: ko.observable(''),
@@ -179,7 +179,10 @@ function app() {
     view.mouseOutIcon = function(marker) {
       marker.setIcon(icons.RED);
     };
+
   }
+  // ===== Map View Model End =====
+
 
   // Mostrar popup InfoWindow no marcador
   function showInfoWindow(marker) {
@@ -400,7 +403,8 @@ function app() {
     });
   }
 
-  // Crear marcador
+
+  // ===== Crear marcador =====
   function createMarker(properties) {
     // Marker inheritance
     var googleMapsMarker = new google.maps.Marker(properties);
@@ -411,6 +415,7 @@ function app() {
     proto.photo = '';
     proto.address = '';
     proto.wiki = '';
+
     // Obter informação da Wikipedia
     proto.getWiki = function() {
       var self = this;
@@ -420,6 +425,7 @@ function app() {
         alert(error);
       });
     };
+
     // Obter endereço do Geocoding
     proto.getAddress = function() {
       var self = this;
@@ -429,6 +435,7 @@ function app() {
         alert(error);
       });
     };
+
     // Obter foto do Flickr ou Places
     proto.getPhoto = function(origin) {
       var self = this;
@@ -440,6 +447,8 @@ function app() {
         });
       }
     };
+
+    // Override setVisible
     proto.oldSetVisible = proto.setVisible;
     proto.setVisible = function(bool) {
       this.oldSetVisible(bool);
