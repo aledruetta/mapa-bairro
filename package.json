@@ -23,7 +23,7 @@
     "csslint-stylish": "^0.0.6",
     "html-minifier": "^3.5.0",
     "htmlprocessor": "^0.2.4",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "jshint": "^2.9.4",
     "jshint-stylish": "^2.2.1",
     "knockout": "^3.5.0",
