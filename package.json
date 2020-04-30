@@ -18,7 +18,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "bootstrap": ">=4.1.2",
+    "bootstrap": ">=4.3.1",
     "csslint": "^1.0.5",
     "csslint-stylish": "^0.0.6",
     "html-minifier": "^3.5.0",
